@@ -86,6 +86,38 @@
     .ghost-icon { animation: ghost-float 1.2s ease-in-out infinite; font-size: 28px; line-height: 1; text-align: center; }
 
     .pacman-icon { font-size: 28px; line-height: 1; text-align: center; transition: transform .15s; }
+
+    /* ── Mystery quiz overlay ─────────────────────────────────────── */
+    #mystery-overlay {
+      position: fixed; inset: 0; z-index: 2500;
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(15,15,35,.95); text-align: center; padding: 24px;
+    }
+    #mystery-overlay h2 { font-size: 1.5rem; margin-bottom: 16px; color: #e2b714; }
+    #mystery-overlay p { font-size: 1rem; line-height: 1.6; max-width: 400px; margin-bottom: 20px; }
+    #mystery-overlay input {
+      width: 280px; padding: 12px; font-size: 1.1rem; border: 2px solid #e2b714;
+      border-radius: 8px; background: #1a1a2e; color: #fff; text-align: center;
+      margin-bottom: 16px; outline: none;
+    }
+    #mystery-overlay input:focus { border-color: #fff; }
+    #mystery-overlay .quiz-buttons { display: flex; gap: 12px; }
+    #mystery-overlay button {
+      padding: 12px 32px; font-size: 1rem; font-weight: 700; border: none; border-radius: 10px;
+      cursor: pointer; transition: transform .15s;
+    }
+    #mystery-overlay button:active { transform: scale(.95); }
+    #mystery-overlay .btn-answer { background: #e2b714; color: #0f0f23; }
+    #mystery-overlay .btn-skip { background: #444; color: #fff; }
+    #mystery-result { font-size: .9rem; margin-top: 8px; min-height: 1.4em; }
+
+    /* ── Ghost immunity indicator ─────────────────────────────────── */
+    #immunity-badge {
+      position: fixed; top: 54px; left: 50%; transform: translateX(-50%);
+      z-index: 1500; background: rgba(0,200,100,.85); color: #fff;
+      padding: 6px 16px; border-radius: 20px; font-size: .85rem; font-weight: 700;
+      display: none; animation: pulse-glow 1s ease-in-out infinite;
+    }
   </style>
 </head>
 <body>
@@ -125,10 +157,25 @@
 </div>
 
 <!-- Desktop hint -->
-<div id="desktop-hint">🖥️ Desktop-Modus: Klicke auf die Karte um dich zu bewegen</div>
+<div id="desktop-hint">🖥️ Test-Modus: Klicke auf die Karte um dich zu bewegen</div>
 
 <!-- GPS accuracy -->
 <div id="gps-accuracy">GPS: –</div>
+
+<!-- Ghost immunity badge -->
+<div id="immunity-badge">🛡️ Geister-Schutz: <span id="immunity-timer">60</span>s</div>
+
+<!-- Mystery quiz overlay -->
+<div id="mystery-overlay">
+  <h2>🔮 Mystery-Rätsel!</h2>
+  <p id="mystery-question"></p>
+  <input type="text" id="mystery-input" placeholder="Deine Antwort..." autocomplete="off" />
+  <div id="mystery-result"></div>
+  <div class="quiz-buttons">
+    <button class="btn-answer" id="btn-mystery-answer">✅ Antworten</button>
+    <button class="btn-skip" id="btn-mystery-skip">⏭️ Überspringen</button>
+  </div>
+</div>
 
 <!-- Auto-center toggle -->
 <button id="center-toggle" style="display:none">📍 Zentrieren</button>
@@ -160,6 +207,12 @@
   const $gpsAcc       = document.getElementById("gps-accuracy");
   const $centerBtn    = document.getElementById("center-toggle");
   const $flash        = document.getElementById("flash");
+  const $mysteryOverlay = document.getElementById("mystery-overlay");
+  const $mysteryQuestion = document.getElementById("mystery-question");
+  const $mysteryInput = document.getElementById("mystery-input");
+  const $mysteryResult = document.getElementById("mystery-result");
+  const $immunityBadge = document.getElementById("immunity-badge");
+  const $immunityTimer = document.getElementById("immunity-timer");
 
   // ── State ─────────────────────────────────────────────────────────
   let map, playerMarker, accuracyCircle;
@@ -177,6 +230,11 @@
   let ghostInterval = null;
   let lastPositionTime = 0;
   let previousLat = null, previousLng = null;
+  let pendingMysteryDot = null;
+  let immunityTimerInterval = null;
+
+  // Test mode via URL parameter ?test=1
+  const isTestMode = new URLSearchParams(window.location.search).has("test");
 
   // ── Cache-type icon URLs ──────────────────────────────────────────
   const ICON_URLS = {
@@ -439,6 +497,16 @@
   }
 
   function collectDot(dot) {
+    // Mystery waypoints trigger quiz before collecting
+    if (dot.data.type === "mystery" && dot.data.question) {
+      pendingMysteryDot = dot;
+      showMysteryQuiz(dot.data);
+      return;
+    }
+    finalizeCollect(dot);
+  }
+
+  function finalizeCollect(dot) {
     dot.collected = true;
     collectedCount++;
     const pts = (GAME_CONFIG.scoreValues && GAME_CONFIG.scoreValues[dot.data.type]) || 10;
@@ -460,6 +528,70 @@
       win();
     }
   }
+
+  // ── Mystery quiz ──────────────────────────────────────────────────
+  function showMysteryQuiz(wpData) {
+    gameRunning = false; // pause game while quiz is shown
+    $mysteryQuestion.textContent = wpData.question;
+    $mysteryInput.value = "";
+    $mysteryResult.textContent = "";
+    $mysteryResult.style.color = "";
+    $mysteryOverlay.style.display = "flex";
+    setTimeout(() => $mysteryInput.focus(), 100);
+  }
+
+  function checkMysteryAnswer() {
+    if (!pendingMysteryDot) return;
+    const userAnswer = $mysteryInput.value.trim().toLowerCase();
+    const correct = String(pendingMysteryDot.data.answer).trim().toLowerCase();
+
+    if (userAnswer === correct) {
+      $mysteryResult.textContent = "✅ Richtig! Geister-Schutz für 60 Sekunden!";
+      $mysteryResult.style.color = "#0f0";
+      activateImmunity(60);
+      setTimeout(() => {
+        $mysteryOverlay.style.display = "none";
+        gameRunning = true;
+        finalizeCollect(pendingMysteryDot);
+        pendingMysteryDot = null;
+      }, 1200);
+    } else {
+      $mysteryResult.textContent = "❌ Falsch! Versuch es nochmal...";
+      $mysteryResult.style.color = "#f44";
+      $mysteryInput.value = "";
+      $mysteryInput.focus();
+    }
+  }
+
+  function skipMystery() {
+    $mysteryOverlay.style.display = "none";
+    gameRunning = true;
+    // Collect without immunity bonus
+    if (pendingMysteryDot) {
+      finalizeCollect(pendingMysteryDot);
+      pendingMysteryDot = null;
+    }
+  }
+
+  function activateImmunity(seconds) {
+    immuneUntil = Date.now() + seconds * 1000;
+    $immunityBadge.style.display = "block";
+    if (immunityTimerInterval) clearInterval(immunityTimerInterval);
+    immunityTimerInterval = setInterval(() => {
+      const remaining = Math.max(0, Math.ceil((immuneUntil - Date.now()) / 1000));
+      $immunityTimer.textContent = remaining;
+      if (remaining <= 0) {
+        clearInterval(immunityTimerInterval);
+        immunityTimerInterval = null;
+        $immunityBadge.style.display = "none";
+      }
+    }, 500);
+  }
+
+  // Mystery quiz event listeners
+  document.getElementById("btn-mystery-answer").addEventListener("click", checkMysteryAnswer);
+  document.getElementById("btn-mystery-skip").addEventListener("click", skipMystery);
+  $mysteryInput.addEventListener("keydown", (e) => { if (e.key === "Enter") checkMysteryAnswer(); });
 
   function ghostHit() {
     lives--;
@@ -497,6 +629,10 @@
     ghostObjects = [];
 
     score = 0; lives = 3; collectedCount = 0; immuneUntil = 0;
+    pendingMysteryDot = null;
+    if (immunityTimerInterval) { clearInterval(immunityTimerInterval); immunityTimerInterval = null; }
+    $immunityBadge.style.display = "none";
+    $mysteryOverlay.style.display = "none";
     updateHeader();
 
     placeDots();
@@ -509,8 +645,14 @@
 
   // ── GPS setup ─────────────────────────────────────────────────────
   function startGPS() {
-    if (!navigator.geolocation) {
+    // Test mode: enable desktop click-to-move via ?test URL parameter
+    if (isTestMode) {
       enableDesktopMode();
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      alert("GPS nicht verfügbar. Füge ?test an die URL an für den Test-Modus.");
       return;
     }
 
@@ -520,7 +662,7 @@
       },
       (err) => {
         console.warn("GPS error:", err.message);
-        enableDesktopMode();
+        alert("GPS-Fehler: " + err.message + "\nFüge ?test an die URL an für den Test-Modus.");
       },
       { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
     );
@@ -532,8 +674,9 @@
     map.on("click", (e) => {
       updatePlayerPosition(e.latlng.lat, e.latlng.lng, 5);
     });
-    // Place player at center initially
-    updatePlayerPosition(GAME_CONFIG.center[0], GAME_CONFIG.center[1], 5);
+    // Place player at first waypoint initially
+    const start = GAME_CONFIG.waypoints[0];
+    updatePlayerPosition(start ? start.lat : GAME_CONFIG.center[0], start ? start.lng : GAME_CONFIG.center[1], 5);
   }
 
   // ── Compass heading (optional) ────────────────────────────────────
