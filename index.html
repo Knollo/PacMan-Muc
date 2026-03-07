@@ -85,7 +85,8 @@
     }
     .ghost-icon { animation: ghost-float 1.2s ease-in-out infinite; font-size: 28px; line-height: 1; text-align: center; }
 
-    .pacman-icon { font-size: 28px; line-height: 1; text-align: center; transition: transform .15s; }
+    .pacman-icon { width: 36px; height: 36px; transition: transform .3s; }
+    .pacman-icon img { width: 100%; height: 100%; }
 
     /* ── Mystery quiz overlay ─────────────────────────────────────── */
     #mystery-overlay {
@@ -430,9 +431,9 @@
   function createPlayerMarker(lat, lng) {
     const icon = L.divIcon({
       className: "",
-      html: '<span class="pacman-icon" id="pacman-emoji">🟡</span>',
-      iconSize: [30, 30],
-      iconAnchor: [15, 15]
+      html: '<div class="pacman-icon" id="pacman-emoji"><img src="pacman.svg" alt="PacMan"></div>',
+      iconSize: [36, 36],
+      iconAnchor: [18, 18]
     });
     playerMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 }).addTo(map);
     accuracyCircle = L.circle([lat, lng], { radius: 15, color: "#4a90d9", fillColor: "#4a90d9", fillOpacity: 0.15, weight: 1 }).addTo(map);
