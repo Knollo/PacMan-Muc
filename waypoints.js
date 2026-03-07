@@ -5,13 +5,13 @@ const GAME_CONFIG = {
 
   // Proximity thresholds in meters
   collectRadius: 15,
-  ghostDangerRadius: 20,
+  ghostDangerRadius: 5,
 
   // Ghost speed (meters per second) – brisk walking pace
   ghostSpeed: 1.5,
 
   // Immunity after ghost hit (seconds)
-  immunityDuration: 5,
+  immunityDuration: 30,
 
   // Win message (German)
   winTitle: "🎉 Gratulation!",
