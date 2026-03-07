@@ -1,6 +1,6 @@
 const GAME_CONFIG = {
   // Map center and zoom – southern section of "Alter Südlicher Friedhof" Munich
-  center: [48.12553, 11.56377],
+  center: [48.12598, 11.56404],
   zoom: 18,
 
   // Proximity thresholds in meters
@@ -31,53 +31,38 @@ const GAME_CONFIG = {
   },
 
   // ---------------------------------------------------------------------------
-  // Waypoints – dots the player must collect
-  // Laid out along the grid-like paths of the southern cemetery section
-  // N-S paths ≈ lng 11.5625, 11.5635, 11.5645, 11.5655
-  // E-W paths ≈ lat 48.1248, 48.1253, 48.1258, 48.1263
+  // Waypoints – from Wegpunkte.csv (Alter Südlicher Friedhof, south section)
+  // Loop route through cemetery paths
   // ---------------------------------------------------------------------------
   waypoints: [
-    // ── West N-S path (lng ≈ 11.5625) ──
-    { lat: 48.12630, lng: 11.56250, type: "traditional", label: "W-Nord" },
-    { lat: 48.12600, lng: 11.56250, type: "earth",        label: "W-1" },
-    { lat: 48.12580, lng: 11.56250, type: "traditional", label: "W-2" },
-    { lat: 48.12553, lng: 11.56250, type: "virtual",     label: "W-Mitte" },
-    { lat: 48.12530, lng: 11.56250, type: "traditional", label: "W-3" },
-    { lat: 48.12500, lng: 11.56250, type: "multi",       label: "W-4" },
-    { lat: 48.12480, lng: 11.56250, type: "traditional", label: "W-Süd" },
-
-    // ── Central-West N-S path (lng ≈ 11.5635) ──
-    { lat: 48.12630, lng: 11.56350, type: "multi",       label: "CW-Nord" },
-    { lat: 48.12580, lng: 11.56350, type: "mystery",     label: "CW-Rätsel" },
-    { lat: 48.12530, lng: 11.56350, type: "traditional", label: "CW-Mitte" },
-    { lat: 48.12480, lng: 11.56350, type: "earth",       label: "CW-Süd" },
-
-    // ── Central-East N-S path (lng ≈ 11.5645) ──
-    { lat: 48.12630, lng: 11.56450, type: "traditional", label: "CE-Nord" },
-    { lat: 48.12580, lng: 11.56450, type: "virtual",     label: "CE-1" },
-    { lat: 48.12553, lng: 11.56450, type: "traditional", label: "CE-Mitte" },
-    { lat: 48.12530, lng: 11.56450, type: "earth",       label: "CE-2" },
-    { lat: 48.12480, lng: 11.56450, type: "multi",       label: "CE-Süd" },
-
-    // ── East N-S path (lng ≈ 11.5655) ──
-    { lat: 48.12630, lng: 11.56550, type: "traditional", label: "E-Nord" },
-    { lat: 48.12600, lng: 11.56550, type: "traditional", label: "E-1" },
-    { lat: 48.12580, lng: 11.56550, type: "mystery",     label: "E-Rätsel" },
-    { lat: 48.12553, lng: 11.56550, type: "virtual",     label: "E-Mitte" },
-    { lat: 48.12530, lng: 11.56550, type: "traditional", label: "E-2" },
-    { lat: 48.12500, lng: 11.56550, type: "earth",       label: "E-3" },
-    { lat: 48.12480, lng: 11.56550, type: "traditional", label: "E-Süd" },
-
-    // ── North E-W cross path (lat ≈ 48.1263) connectors ──
-    { lat: 48.12630, lng: 11.56400, type: "traditional", label: "N-Quer" },
-
-    // ── Middle E-W cross path (lat ≈ 48.1253) connectors ──
-    { lat: 48.12530, lng: 11.56300, type: "virtual",     label: "M-Quer-1" },
-    { lat: 48.12530, lng: 11.56500, type: "traditional", label: "M-Quer-2" },
-
-    // ── South E-W cross path (lat ≈ 48.1248) connectors ──
-    { lat: 48.12480, lng: 11.56300, type: "traditional", label: "S-Quer-1" },
-    { lat: 48.12480, lng: 11.56500, type: "mystery",     label: "S-Quer-Rätsel" }
+    { lat: 48.12651, lng: 11.56338, type: "traditional", label: "Start" },
+    { lat: 48.12646, lng: 11.56353, type: "traditional", label: "Punkt 2" },
+    { lat: 48.12641, lng: 11.56368, type: "earth",       label: "Punkt 3" },
+    { lat: 48.12637, lng: 11.56380, type: "traditional", label: "Punkt 4" },
+    { lat: 48.12631, lng: 11.56395, type: "multi",       label: "Punkt 5" },
+    { lat: 48.12627, lng: 11.56409, type: "traditional", label: "Punkt 6" },
+    { lat: 48.12623, lng: 11.56420, type: "virtual",     label: "Punkt 7" },
+    { lat: 48.12619, lng: 11.56435, type: "traditional", label: "Punkt 8" },
+    { lat: 48.12615, lng: 11.56445, type: "earth",       label: "Punkt 9" },
+    { lat: 48.12611, lng: 11.56457, type: "traditional", label: "Punkt 10" },
+    { lat: 48.12608, lng: 11.56469, type: "mystery",     label: "Wendepunkt" },
+    { lat: 48.12605, lng: 11.56461, type: "traditional", label: "Punkt 12" },
+    { lat: 48.12600, lng: 11.56458, type: "multi",       label: "Punkt 13" },
+    { lat: 48.12596, lng: 11.56453, type: "traditional", label: "Punkt 14" },
+    { lat: 48.12590, lng: 11.56450, type: "virtual",     label: "Punkt 15" },
+    { lat: 48.12583, lng: 11.56445, type: "traditional", label: "Punkt 16" },
+    { lat: 48.12576, lng: 11.56440, type: "earth",       label: "Punkt 17" },
+    { lat: 48.12570, lng: 11.56436, type: "traditional", label: "Punkt 18" },
+    { lat: 48.12561, lng: 11.56428, type: "multi",       label: "Punkt 19" },
+    { lat: 48.12553, lng: 11.56423, type: "mystery",     label: "Südpunkt" },
+    { lat: 48.12544, lng: 11.56407, type: "traditional", label: "Punkt 21" },
+    { lat: 48.12549, lng: 11.56393, type: "virtual",     label: "Punkt 22" },
+    { lat: 48.12558, lng: 11.56382, type: "traditional", label: "Punkt 23" },
+    { lat: 48.12570, lng: 11.56382, type: "earth",       label: "Punkt 24" },
+    { lat: 48.12582, lng: 11.56392, type: "traditional", label: "Punkt 25" },
+    { lat: 48.12593, lng: 11.56401, type: "multi",       label: "Punkt 26" },
+    { lat: 48.12603, lng: 11.56409, type: "traditional", label: "Punkt 27" },
+    { lat: 48.12615, lng: 11.56418, type: "traditional", label: "Ziel" }
   ],
 
   // ---------------------------------------------------------------------------
@@ -89,58 +74,53 @@ const GAME_CONFIG = {
       name: "Blinky",
       color: "#FF0000",
       emoji: "👻",
-      // Patrols the west side up and down
+      // Patrols the upper diagonal section
       route: [
-        [48.12630, 11.56250],
-        [48.12600, 11.56250],
-        [48.12580, 11.56250],
-        [48.12553, 11.56250],
-        [48.12530, 11.56250],
-        [48.12500, 11.56250],
-        [48.12480, 11.56250],
-        [48.12480, 11.56350],
-        [48.12530, 11.56350],
-        [48.12580, 11.56350],
-        [48.12630, 11.56350]
+        [48.12651, 11.56338],
+        [48.12641, 11.56368],
+        [48.12631, 11.56395],
+        [48.12623, 11.56420],
+        [48.12615, 11.56445],
+        [48.12608, 11.56469],
+        [48.12615, 11.56445],
+        [48.12623, 11.56420],
+        [48.12631, 11.56395]
       ]
     },
     {
       name: "Pinky",
       color: "#FFB8FF",
       emoji: "👻",
-      // Patrols the east side
+      // Patrols the southern curve
       route: [
-        [48.12630, 11.56550],
-        [48.12600, 11.56550],
-        [48.12580, 11.56550],
-        [48.12553, 11.56550],
-        [48.12530, 11.56550],
-        [48.12500, 11.56550],
-        [48.12480, 11.56550],
-        [48.12480, 11.56450],
-        [48.12530, 11.56450],
-        [48.12580, 11.56450],
-        [48.12630, 11.56450]
+        [48.12608, 11.56469],
+        [48.12600, 11.56458],
+        [48.12590, 11.56450],
+        [48.12576, 11.56440],
+        [48.12561, 11.56428],
+        [48.12553, 11.56423],
+        [48.12544, 11.56407],
+        [48.12553, 11.56423],
+        [48.12561, 11.56428],
+        [48.12576, 11.56440]
       ]
     },
     {
       name: "Inky",
       color: "#00FFFF",
       emoji: "👻",
-      // Patrols the horizontal middle
+      // Patrols the return path
       route: [
-        [48.12530, 11.56250],
-        [48.12530, 11.56300],
-        [48.12530, 11.56350],
-        [48.12530, 11.56450],
-        [48.12530, 11.56500],
-        [48.12530, 11.56550],
-        [48.12480, 11.56550],
-        [48.12480, 11.56500],
-        [48.12480, 11.56450],
-        [48.12480, 11.56350],
-        [48.12480, 11.56300],
-        [48.12480, 11.56250]
+        [48.12544, 11.56407],
+        [48.12549, 11.56393],
+        [48.12558, 11.56382],
+        [48.12570, 11.56382],
+        [48.12582, 11.56392],
+        [48.12593, 11.56401],
+        [48.12603, 11.56409],
+        [48.12615, 11.56418],
+        [48.12603, 11.56409],
+        [48.12593, 11.56401]
       ]
     }
   ]
