@@ -46,7 +46,7 @@ const GAME_CONFIG = {
     { lat: 48.12651, lng: 11.56328, type: "earth", label: "Punkt 7" },
     { lat: 48.12621, lng: 11.56430, type: "traditional", label: "Punkt 8" },
     { lat: 48.12616, lng: 11.56442, type: "mystery", label: "Punkt 9",
-      question: "Wie heisst der Friedhof auf dem du stehst?", answer: "alter suedlicher friedhof" },
+      question: "Wieviele Ausgänge hat der Friedhof auf dem du stehst?", answer: "4" },
     { lat: 48.12612, lng: 11.56456, type: "traditional", label: "Punkt 10" },
     { lat: 48.12607, lng: 11.56472, type: "traditional", label: "Punkt 11" },
     { lat: 48.12602, lng: 11.56458, type: "multi", label: "Punkt 12" },
