@@ -72,14 +72,6 @@
     .name-input:focus { border-color: #fff; }
     .name-input::placeholder { color: #666; }
 
-    /* ── Desktop hint ──────────────────────────────────────────────── */
-    #desktop-hint {
-      position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
-      z-index: 1500; background: rgba(26,26,46,.85); color: #e2b714;
-      padding: 6px 14px; border-radius: 20px; font-size: .8rem; pointer-events: none;
-      display: none;
-    }
-
     /* ── GPS accuracy badge ────────────────────────────────────────── */
     #gps-accuracy {
       position: fixed; bottom: 12px; right: 12px; z-index: 1500;
@@ -209,9 +201,6 @@
   <button id="btn-close-leaderboard" style="margin-top: 16px;">← Zurück</button>
 </div>
 
-<!-- Desktop hint -->
-<div id="desktop-hint">🖥️ Test-Modus: Klicke auf die Karte um dich zu bewegen</div>
-
 <!-- GPS accuracy -->
 <div id="gps-accuracy">GPS: –</div>
 
@@ -260,7 +249,6 @@
   const $goScreen     = document.getElementById("game-over-screen");
   const $goScore      = document.getElementById("go-score");
   const $goTime       = document.getElementById("go-time");
-  const $desktopHint  = document.getElementById("desktop-hint");
   const $gpsAcc       = document.getElementById("gps-accuracy");
   const $centerBtn    = document.getElementById("center-toggle");
   const $flash        = document.getElementById("flash");
@@ -286,7 +274,6 @@
   let ghostObjects = [];  // { marker, cfg, path, pathIdx, progress, lastRepath, routeIdx, forward }
   let pathLine = null;
   let watchId = null;
-  let desktopMode = false;
   let autoCenter = true;
   let immuneUntil = 0;
   let gameRunning = false;
@@ -301,9 +288,6 @@
   let lastEntryId = null;
 
   const LEADERBOARD_API = "https://qwerx.de/pacman/leaderboard.php";
-
-  // Test mode – activated via window.__TEST_MODE__ (set by test.html)
-  const isTestMode = window.__TEST_MODE__ === true;
 
   // ── Timer functions ────────────────────────────────────────────────
   function startTimer() {
@@ -965,12 +949,6 @@
 
   // ── GPS setup ─────────────────────────────────────────────────────
   function startGPS() {
-    // Test mode: enable desktop click-to-move via ?test URL parameter
-    if (isTestMode) {
-      enableDesktopMode();
-      return;
-    }
-
     if (!navigator.geolocation) {
       alert("GPS nicht verfügbar. Bitte aktiviere die Standortfreigabe.");
       return;
@@ -986,17 +964,6 @@
       },
       { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
     );
-  }
-
-  function enableDesktopMode() {
-    desktopMode = true;
-    $desktopHint.style.display = "block";
-    map.on("click", (e) => {
-      updatePlayerPosition(e.latlng.lat, e.latlng.lng, 5);
-    });
-    // Place player at first waypoint initially
-    const start = GAME_CONFIG.waypoints[0];
-    updatePlayerPosition(start ? start.lat : GAME_CONFIG.center[0], start ? start.lng : GAME_CONFIG.center[1], 5);
   }
 
   // ── Compass heading (optional) ────────────────────────────────────
