@@ -371,8 +371,7 @@
   }
 
   // ── Waypoint graph for ghost AI ──────────────────────────────────
-  const GRAPH_CONNECT_RADIUS = 30; // meters – waypoints within this distance are neighbors
-  const GHOST_REPATH_INTERVAL = 3; // seconds between path recalculations
+  const GRAPH_CONNECT_RADIUS = 18; // meters – waypoints within this distance are path neighbors
   let waypointGraph = [];          // adjacency list: waypointGraph[i] = [j, k, ...]
   let waypointCoords = [];         // [[lat, lng], ...] from GAME_CONFIG.waypoints
 
@@ -401,74 +400,79 @@
     return best;
   }
 
-  // BFS shortest path from startIdx to goalIdx; returns array of waypoint indices
-  function bfsPath(startIdx, goalIdx) {
-    if (startIdx === goalIdx) return [startIdx];
-    const visited = new Set([startIdx]);
-    const queue = [[startIdx]];
-    while (queue.length) {
-      const path = queue.shift();
-      const current = path[path.length - 1];
-      for (const neighbor of waypointGraph[current]) {
-        if (neighbor === goalIdx) return [...path, neighbor];
-        if (!visited.has(neighbor)) {
-          visited.add(neighbor);
-          queue.push([...path, neighbor]);
-        }
-      }
+  // Pick the neighbor waypoint closest to a target position
+  function pickNeighborClosestTo(wpIdx, targetLat, targetLng, exclude) {
+    const neighbors = waypointGraph[wpIdx];
+    if (!neighbors || neighbors.length === 0) return wpIdx;
+    let best = neighbors[0], bestDist = Infinity;
+    for (const n of neighbors) {
+      if (n === exclude) continue; // avoid going back to where we came from
+      const d = getDistance(targetLat, targetLng, waypointCoords[n][0], waypointCoords[n][1]);
+      if (d < bestDist) { bestDist = d; best = n; }
     }
-    // No path found – return direct line
-    return [startIdx, goalIdx];
+    return best;
   }
 
-  // Pick target waypoint index based on ghost personality
-  function pickGhostTarget(ghost) {
-    if (playerLat === null) return null;
+  // Pick next waypoint for ghost based on personality
+  function pickNextWaypoint(ghost) {
+    const neighbors = waypointGraph[ghost.currentWpIdx];
+    if (!neighbors || neighbors.length === 0) return;
+    const prevWp = ghost.prevWpIdx;
 
-    const playerWpIdx = nearestWaypointIndex(playerLat, playerLng);
+    if (playerLat === null) {
+      // Random walk when no player position
+      const filtered = neighbors.filter(n => n !== prevWp);
+      const choices = filtered.length > 0 ? filtered : neighbors;
+      ghost.targetWpIdx = choices[Math.floor(Math.random() * choices.length)];
+      return;
+    }
 
     switch (ghost.cfg.name) {
       case "Blinky":
-        // Directly chase: target waypoint closest to player
-        return playerWpIdx;
+        // Greedy chase: always pick neighbor closest to player
+        ghost.targetWpIdx = pickNeighborClosestTo(ghost.currentWpIdx, playerLat, playerLng, prevWp);
+        break;
 
       case "Pinky": {
-        // Target ahead of player: pick a waypoint 2-3 steps ahead in player's movement direction
+        // Ambush: target a point ~40m ahead of player's movement direction
+        let targetLat = playerLat, targetLng = playerLng;
         if (previousLat !== null && previousLng !== null) {
           const bearing = getBearing(previousLat, previousLng, playerLat, playerLng);
-          // Project ~40m ahead
-          const aheadLat = playerLat + (40 / 111320) * Math.cos(bearing * Math.PI / 180);
-          const aheadLng = playerLng + (40 / (111320 * Math.cos(playerLat * Math.PI / 180))) * Math.sin(bearing * Math.PI / 180);
-          return nearestWaypointIndex(aheadLat, aheadLng);
+          targetLat = playerLat + (40 / 111320) * Math.cos(bearing * Math.PI / 180);
+          targetLng = playerLng + (40 / (111320 * Math.cos(playerLat * Math.PI / 180))) * Math.sin(bearing * Math.PI / 180);
         }
-        return playerWpIdx;
+        ghost.targetWpIdx = pickNeighborClosestTo(ghost.currentWpIdx, targetLat, targetLng, prevWp);
+        break;
       }
 
       case "Inky": {
-        // Random waypoint near the player (within ~60m radius)
-        const candidates = [];
-        for (let i = 0; i < waypointCoords.length; i++) {
-          const d = getDistance(playerLat, playerLng, waypointCoords[i][0], waypointCoords[i][1]);
-          if (d < 60) candidates.push(i);
+        // Unpredictable: 60% chase, 40% random
+        if (Math.random() < 0.6) {
+          ghost.targetWpIdx = pickNeighborClosestTo(ghost.currentWpIdx, playerLat, playerLng, prevWp);
+        } else {
+          const filtered = neighbors.filter(n => n !== prevWp);
+          const choices = filtered.length > 0 ? filtered : neighbors;
+          ghost.targetWpIdx = choices[Math.floor(Math.random() * choices.length)];
         }
-        if (candidates.length > 0) return candidates[Math.floor(Math.random() * candidates.length)];
-        return playerWpIdx;
+        break;
       }
 
       case "Stinky": {
-        // Patrol randomly, but head toward player when close
-        const ghostPos = ghost.marker.getLatLng();
-        const distToPlayer = getDistance(ghostPos.lat, ghostPos.lng, playerLat, playerLng);
-        if (distToPlayer < 40) {
-          // Close enough – chase player
-          return playerWpIdx;
+        // Patrol randomly, but chase when within 50m of player
+        const ghostWp = waypointCoords[ghost.currentWpIdx];
+        const distToPlayer = getDistance(ghostWp[0], ghostWp[1], playerLat, playerLng);
+        if (distToPlayer < 50) {
+          ghost.targetWpIdx = pickNeighborClosestTo(ghost.currentWpIdx, playerLat, playerLng, prevWp);
+        } else {
+          const filtered = neighbors.filter(n => n !== prevWp);
+          const choices = filtered.length > 0 ? filtered : neighbors;
+          ghost.targetWpIdx = choices[Math.floor(Math.random() * choices.length)];
         }
-        // Random patrol – pick a random waypoint
-        return Math.floor(Math.random() * waypointCoords.length);
+        break;
       }
 
       default:
-        return playerWpIdx;
+        ghost.targetWpIdx = pickNeighborClosestTo(ghost.currentWpIdx, playerLat, playerLng, prevWp);
     }
   }
 
@@ -477,89 +481,71 @@
     ghostObjects = [];
     buildWaypointGraph();
     GAME_CONFIG.ghosts.forEach((g) => {
-      const start = g.route[0];
+      const startCoord = g.route[0];
+      const startWpIdx = nearestWaypointIndex(startCoord[0], startCoord[1]);
       const icon = L.divIcon({
         className: "",
         html: `<span class="ghost-icon" style="filter: drop-shadow(0 0 6px ${g.color});">${g.emoji}</span>`,
         iconSize: [30, 30],
         iconAnchor: [15, 15]
       });
-      const marker = L.marker(start, { icon, interactive: false }).addTo(map);
-      ghostObjects.push({
+      const marker = L.marker(waypointCoords[startWpIdx], { icon, interactive: false }).addTo(map);
+      const ghost = {
         marker,
         cfg: g,
-        // Path-based movement state
-        path: [],          // array of [lat, lng] waypoints to follow
-        pathIdx: 0,        // current segment index in path
-        progress: 0,       // 0-1 progress along current segment
-        lastRepath: 0,     // timestamp of last path recomputation
-        routeIdx: 0,       // kept for compatibility
-        forward: true      // kept for compatibility
-      });
+        currentWpIdx: startWpIdx,
+        targetWpIdx: null,
+        prevWpIdx: null,
+        progress: 0
+      };
+      ghostObjects.push(ghost);
+      pickNextWaypoint(ghost);
     });
   }
 
-  // ── Ghost movement tick (called every ~100ms) ─────────────────────
+  // ── Ghost movement tick ─────────────────────────────────────────
   function moveGhosts(dt) {
-    const now = Date.now() / 1000;
-
     ghostObjects.forEach((ghost) => {
-      // Determine speed – Stinky speeds up near player
+      if (ghost.targetWpIdx === null || ghost.targetWpIdx === undefined) {
+        pickNextWaypoint(ghost);
+        if (ghost.targetWpIdx === null) return;
+      }
+
+      // Speed – Stinky speeds up near player
       let speed = GAME_CONFIG.ghostSpeed;
       if (ghost.cfg.name === "Stinky" && playerLat !== null) {
-        const ghostPos = ghost.marker.getLatLng();
-        const distToPlayer = getDistance(ghostPos.lat, ghostPos.lng, playerLat, playerLng);
+        const wp = waypointCoords[ghost.currentWpIdx];
+        const distToPlayer = getDistance(wp[0], wp[1], playerLat, playerLng);
         if (distToPlayer < 30) speed *= 1.8;
       }
 
-      // Recompute path periodically
-      const needsRepath = ghost.path.length === 0 ||
-                          ghost.pathIdx >= ghost.path.length - 1 ||
-                          (now - ghost.lastRepath) > GHOST_REPATH_INTERVAL;
-
-      if (needsRepath && playerLat !== null) {
-        const targetIdx = pickGhostTarget(ghost);
-        if (targetIdx !== null) {
-          const ghostPos = ghost.marker.getLatLng();
-          const ghostWpIdx = nearestWaypointIndex(ghostPos.lat, ghostPos.lng);
-          const pathIndices = bfsPath(ghostWpIdx, targetIdx);
-          ghost.path = pathIndices.map(i => waypointCoords[i]);
-          // Prepend current ghost position for smooth start
-          ghost.path.unshift([ghostPos.lat, ghostPos.lng]);
-          ghost.pathIdx = 0;
-          ghost.progress = 0;
-          ghost.lastRepath = now;
-        }
-      }
-
-      // Move along computed path
-      if (ghost.path.length < 2) return;
-      if (ghost.pathIdx >= ghost.path.length - 1) return;
-
-      const from = ghost.path[ghost.pathIdx];
-      const to = ghost.path[ghost.pathIdx + 1];
+      const from = waypointCoords[ghost.currentWpIdx];
+      const to = waypointCoords[ghost.targetWpIdx];
       const segDist = getDistance(from[0], from[1], to[0], to[1]);
 
-      if (segDist === 0) {
-        ghost.pathIdx++;
+      if (segDist < 0.5) {
+        // Already at target, pick next
+        ghost.prevWpIdx = ghost.currentWpIdx;
+        ghost.currentWpIdx = ghost.targetWpIdx;
         ghost.progress = 0;
+        pickNextWaypoint(ghost);
         return;
       }
 
-      const step = (speed * dt) / segDist;
-      ghost.progress += step;
+      ghost.progress += (speed * dt) / segDist;
 
       if (ghost.progress >= 1) {
+        // Arrived at target waypoint – pick next
+        ghost.prevWpIdx = ghost.currentWpIdx;
+        ghost.currentWpIdx = ghost.targetWpIdx;
         ghost.progress = 0;
-        ghost.pathIdx++;
-        // If we've reached the end, the next repath tick will recalculate
+        ghost.marker.setLatLng(waypointCoords[ghost.currentWpIdx]);
+        pickNextWaypoint(ghost);
+        return;
       }
 
-      // Interpolate position along current segment
-      const idx = Math.min(ghost.pathIdx, ghost.path.length - 2);
-      const segFrom = ghost.path[idx];
-      const segTo = ghost.path[idx + 1];
-      const pos = interpolate(segFrom, segTo, Math.min(ghost.progress, 1));
+      // Interpolate position along segment
+      const pos = interpolate(from, to, ghost.progress);
       ghost.marker.setLatLng(pos);
     });
   }
