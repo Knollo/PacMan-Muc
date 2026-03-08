@@ -903,6 +903,13 @@
     }
     renderLeaderboard(entries, $winLeaderboard, lastEntryId);
 
+    // Notify server about game completion (fire-and-forget)
+    fetch(`${LEADERBOARD_API}?action=notify_win`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ player_name: playerName, score: score, time_seconds: timeSeconds })
+    }).catch(() => {});
+
     // Toggle visibility listener
     $leaderboardVisible.onchange = async () => {
         if (lastEntryId) {
