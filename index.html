@@ -1014,6 +1014,12 @@
     playerName = name;
     sessionStorage.setItem("pacman_player_name", name);
 
+    fetch(`${LEADERBOARD_API}?action=notify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ player_name: name })
+    }).catch(() => {});
+
     ensureAudio();
     $startScreen.style.display = "none";
     $header.style.display = "flex";
