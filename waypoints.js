@@ -25,8 +25,10 @@ const GAME_CONFIG = {
   scoreValues: {
     traditional: 10,
     multi: 15,
+    letterbox: 15,
     mystery: 50,
     virtual: 20,
+    event: 25,
     earth: 25
   },
 
