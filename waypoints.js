@@ -13,13 +13,8 @@ const GAME_CONFIG = {
   // Immunity after ghost hit (seconds)
   immunityDuration: 30,
 
-  // Win message (German)
+  // Win message – delivered by server API after game completion
   winTitle: "🎉 Gratulation!",
-  winMessage:
-    "Du hast alle Punkte gesammelt! Hier ist dein Geocache-Hinweis:\n\n" +
-    "Der Cache befindet sich am Ende des Weges bei der großen Eiche.\n" +
-    "Koordinaten: N 48° 07.530 E 011° 33.820\n\n" +
-    "Viel Erfolg beim Suchen!",
 
   // Score per cache type
   scoreValues: {

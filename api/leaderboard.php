@@ -25,6 +25,13 @@ $DB_NAME = '%%MYSQL_DB%%';
 $DB_USER = '%%MYSQL_DB%%';
 $DB_PASS = '%%MYSQL_PW%%';
 
+// Win message – only delivered server-side after game completion
+$WIN_MESSAGE = "Du hast alle Punkte gesammelt! Hier ist dein Geocache-Hinweis:\n\n"
+    . "Der Cache befindet sich am Ende des Weges bei der großen Eiche.\n"
+    . "Koordinaten: N 48° 07.530 E 011° 33.820\n\n"
+    . "Viel Erfolg beim Suchen!";
+$TOTAL_DOTS = 99;
+
 try {
     $pdo = new PDO(
         "mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4",
@@ -96,7 +103,8 @@ switch ($action) {
         echo json_encode([
             'success' => true,
             'id' => intval($id),
-            'leaderboard' => $lb->fetchAll(PDO::FETCH_ASSOC)
+            'leaderboard' => $lb->fetchAll(PDO::FETCH_ASSOC),
+            'win_message' => ($dots >= $TOTAL_DOTS) ? $WIN_MESSAGE : null
         ]);
         break;
 

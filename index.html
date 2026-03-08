@@ -361,10 +361,10 @@
           });
           const data = await res.json();
           lastEntryId = data.id;
-          return data.leaderboard || [];
+          return { entries: data.leaderboard || [], winMessage: data.win_message || null };
       } catch (e) {
           console.warn("Score submit failed:", e);
-          return [];
+          return { entries: [], winMessage: null };
       }
   }
 
@@ -905,13 +905,18 @@
     soundWin();
     const timeSeconds = getElapsedSeconds();
     $winTitle.textContent = GAME_CONFIG.winTitle;
-    $winMessage.textContent = GAME_CONFIG.winMessage;
+    $winMessage.textContent = "Ergebnis wird übermittelt…";
     $winStats.textContent = `Punkte: ${score} · Zeit: ${formatTime(timeSeconds)} · Leben: ${lives}/3`;
     $winScreen.style.display = "flex";
 
     // Submit score (visible by default)
     $leaderboardVisible.checked = true;
-    const entries = await submitScore(true);
+    const { entries, winMessage } = await submitScore(true);
+    if (winMessage) {
+      $winMessage.textContent = winMessage;
+    } else {
+      $winMessage.textContent = "Glückwunsch! Dein Ergebnis wurde gespeichert.";
+    }
     renderLeaderboard(entries, $winLeaderboard, lastEntryId);
 
     // Toggle visibility listener
