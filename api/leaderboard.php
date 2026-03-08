@@ -19,6 +19,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// Notify action – send email when game starts (no DB required)
+if (($_GET['action'] ?? '') === 'notify') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $name = isset($data['player_name']) ? mb_substr(trim($data['player_name']), 0, 50) : '';
+    if ($name === '') {
+        http_response_code(400);
+        echo json_encode(['error' => 'player_name required']);
+        exit;
+    }
+    // Strip newlines to prevent email header injection via the subject
+    $safeName = str_replace(["\r", "\n"], '', $name);
+    $to      = 'drumpldeer@gmail.com';
+    $subject = 'PacMan von ' . $safeName;
+    $message = $safeName . ' hat ein PacMan-Spiel gestartet.';
+    $headers = 'From: pacman@qwerx.de';
+    if (mail($to, $subject, $message, $headers)) {
+        echo json_encode(['success' => true]);
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to send email']);
+    }
+    exit;
+}
+
 // Database credentials – injected by GitHub Actions deploy
 $DB_HOST = 'qwerx.de';
 $DB_NAME = '%%MYSQL_DB%%';
