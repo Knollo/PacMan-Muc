@@ -17,13 +17,26 @@ jobs:
           sed -i "s/%%MYSQL_DB%%/${{ secrets.MySQL_DB }}/g" api/leaderboard.php
           sed -i "s/%%MYSQL_PW%%/${{ secrets.MySQL_PW }}/g" api/leaderboard.php
 
+      - name: Install FTP Client
+        run: sudo apt-get -qq install -y lftp
+
       - name: Deploy API via FTP
         run: |
-          sudo apt-get -qq install -y lftp
           lftp -e "
             set ftp:passive-mode on;
             set ftp:ssl-allow no;
+            open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SITE }};
             mirror -e --delete -R ./api /pacman;
             ls -la /pacman;
-            bye
-          " -u "${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }}" "${{ secrets.FTP_SITE }}" || echo "FTP deploy done"
+            quit
+          " || echo "FTP deploy done"
+
+      - name: Verify Deployment
+        run: |
+          lftp -e "
+            set ftp:passive-mode on;
+            set ftp:ssl-allow no;
+            open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SITE }};
+            ls -la /pacman;
+            quit
+          "
