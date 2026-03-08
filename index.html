@@ -302,8 +302,8 @@
 
   const LEADERBOARD_API = "https://qwerx.de/pacman/leaderboard.php";
 
-  // Test mode via URL parameter ?test=1
-  const isTestMode = new URLSearchParams(window.location.search).has("test");
+  // Test mode – activated via window.__TEST_MODE__ (set by test.html)
+  const isTestMode = window.__TEST_MODE__ === true;
 
   // ── Timer functions ────────────────────────────────────────────────
   function startTimer() {
@@ -972,7 +972,7 @@
     }
 
     if (!navigator.geolocation) {
-      alert("GPS nicht verfügbar. Füge ?test an die URL an für den Test-Modus.");
+      alert("GPS nicht verfügbar. Bitte aktiviere die Standortfreigabe.");
       return;
     }
 
@@ -982,7 +982,7 @@
       },
       (err) => {
         console.warn("GPS error:", err.message);
-        alert("GPS-Fehler: " + err.message + "\nFüge ?test an die URL an für den Test-Modus.");
+        alert("GPS-Fehler: " + err.message + "\nBitte aktiviere die Standortfreigabe.");
       },
       { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
     );

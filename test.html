@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>PacMan München – Testmodus</title>
+  <style>
+    * { margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    iframe { width: 100%; height: 100%; border: none; }
+  </style>
+</head>
+<body>
+  <script>
+    // Fetch index.html, inject __TEST_MODE__ before game script, render in page
+    fetch("index.html")
+      .then(r => r.text())
+      .then(html => {
+        const patched = html.replace(
+          '<script src="waypoints.js"><\/script>',
+          '<script>window.__TEST_MODE__ = true;<\/script>\n<script src="waypoints.js"><\/script>'
+        );
+        document.open();
+        document.write(patched);
+        document.close();
+      });
+  </script>
+</body>
+</html>
