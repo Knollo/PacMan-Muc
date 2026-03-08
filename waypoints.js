@@ -131,13 +131,13 @@ const GAME_CONFIG = {
     { lat: 48.12532, lng: 11.56407, type: "traditional", label: "Punkt 90" },
     { lat: 48.12518, lng: 11.56455, type: "traditional", label: "Punkt 91" },
     { lat: 48.12506, lng: 11.56447, type: "event", label: "Punkt 92" },
-    { lat: 48.12506, lng: 11.56447, type: "letterbox", label: "Punkt 93" },
-    { lat: 48.12506, lng: 11.56447, type: "webcam", label: "Punkt 94" },
-    { lat: 48.12506, lng: 11.56447, type: "event", label: "Punkt 95" },
-    { lat: 48.12506, lng: 11.56447, type: "letterbox", label: "Punkt 96" },
-    { lat: 48.12506, lng: 11.56447, type: "tradi", label: "Punkt 97" },
-    { lat: 48.12506, lng: 11.56447, type: "event", label: "Punkt 98" },
-    { lat: 48.12506, lng: 11.56447, type: "tradi", label: "Punkt 99" }
+    { lat: 48.12526, lng: 11.56461, type: "letterbox", label: "Punkt 93" },
+    { lat: 48.12623, lng: 11.56423, type: "webcam", label: "Punkt 94" },
+    { lat: 48.12609, lng: 11.56464, type: "event", label: "Punkt 95" },
+    { lat: 48.12638, lng: 11.56377, type: "letterbox", label: "Punkt 96" },
+    { lat: 48.12502, lng: 11.56277, type: "tradi", label: "Punkt 97" },
+    { lat: 48.12487, lng: 11.56323, type: "event", label: "Punkt 98" },
+    { lat: 48.12473, lng: 11.56366, type: "tradi", label: "Punkt 99" }
   ],
 
   // ---------------------------------------------------------------------------
