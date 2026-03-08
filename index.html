@@ -515,6 +515,11 @@
     score += pts;
     soundCollect();
 
+    // Virtual caches restore a life (max 3)
+    if (dot.data.type === "virtual" && lives < 3) {
+      lives++;
+    }
+
     // Animate marker
     const el = dot.marker.getElement();
     if (el) {
