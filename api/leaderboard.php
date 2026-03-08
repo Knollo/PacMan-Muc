@@ -1,6 +1,6 @@
 <?php
 /**
- * PacMan München – Leaderboard API v1.2
+ * PacMan München – Leaderboard API v1.3
  * 
  * Endpoints:
  *   GET  ?action=top     → Top 20 sichtbare Einträge
