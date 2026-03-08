@@ -137,7 +137,7 @@
 <div class="overlay" id="start-screen">
   <h1>🎮 PacMan München</h1>
   <p>Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!</p>
-  <p class="subtitle">GPS-basiertes Outdoor-Spiel · 3 Leben · ~30 Punkte</p>
+  <p class="subtitle">GPS-basiertes Outdoor-Spiel · 3 Leben · 92 Punkte</p>
   <button id="btn-start">▶ START</button>
 </div>
 
@@ -239,11 +239,11 @@
 
   // ── Cache-type icon URLs ──────────────────────────────────────────
   const ICON_URLS = {
-    traditional: "https://cgeo.droescher.eu/_media/type_traditional.svg",
-    mystery:     "https://cgeo.droescher.eu/_media/type_mystery.svg",
-    multi:       "https://cgeo.droescher.eu/_media/type_multi.svg",
-    virtual:     "https://cgeo.droescher.eu/_media/type_virtual.svg",
-    earth:       "https://cgeo.droescher.eu/_media/type_earth.svg"
+    traditional: "Images/type_traditional.svg",
+    mystery:     "Images/type_mystery.svg",
+    multi:       "Images/type_multi.svg",
+    virtual:     "Images/type_virtual.svg",
+    earth:       "Images/type_earth.svg"
   };
 
   // ── Audio context (lazy init after user gesture) ──────────────────
@@ -431,7 +431,7 @@
   function createPlayerMarker(lat, lng) {
     const icon = L.divIcon({
       className: "",
-      html: '<div class="pacman-icon" id="pacman-emoji"><img src="pacman.svg" alt="PacMan"></div>',
+      html: '<div class="pacman-icon" id="pacman-emoji"><img src="Images/pacman.svg" alt="PacMan"></div>',
       iconSize: [36, 36],
       iconAnchor: [18, 18]
     });
