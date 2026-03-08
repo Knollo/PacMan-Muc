@@ -57,7 +57,7 @@ const GAME_CONFIG = {
     { lat: 48.12577, lng: 11.56439, type: "multi", label: "Punkt 16" },
     { lat: 48.12565, lng: 11.56431, type: "traditional", label: "Punkt 17" },
     { lat: 48.12551, lng: 11.56422, type: "multi", label: "Punkt 18" },
-    { lat: 48.12559, lng: 11.56363, type: "virtual", label: "Punkt 19" },
+    { lat: 48.12559, lng: 11.56363, type: "multi", label: "Punkt 19" },
     { lat: 48.12544, lng: 11.56407, type: "traditional", label: "Punkt 20" },
     { lat: 48.12549, lng: 11.56395, type: "virtual", label: "Punkt 21" },
     { lat: 48.12562, lng: 11.56376, type: "virtual", label: "Punkt 22" },
