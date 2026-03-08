@@ -21,22 +21,17 @@ jobs:
         run: sudo apt-get -qq install -y lftp
 
       - name: Deploy API via FTP
+        env:
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.FTP_SITE }}
         run: |
-          lftp -e "
-            set ftp:passive-mode on;
-            set ftp:ssl-allow no;
-            open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SITE }};
-            mirror -e --delete -R ./api /pacman;
-            ls -la /pacman;
-            quit
-          " || echo "FTP deploy done"
+          lftp -e "set ftp:passive-mode on; set ftp:ssl-allow no; open -u ${FTP_USER},${FTP_PASS} ${FTP_HOST}; mirror -e --delete -R ./api /pacman; ls -la /pacman; quit" || echo "FTP deploy done"
 
       - name: Verify Deployment
+        env:
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.FTP_SITE }}
         run: |
-          lftp -e "
-            set ftp:passive-mode on;
-            set ftp:ssl-allow no;
-            open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SITE }};
-            ls -la /pacman;
-            quit
-          "
+          lftp -e "set ftp:passive-mode on; set ftp:ssl-allow no; open -u ${FTP_USER},${FTP_PASS} ${FTP_HOST}; ls -la /pacman; quit"
