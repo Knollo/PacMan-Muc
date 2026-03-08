@@ -1,0 +1,29 @@
+name: Deploy API to qwerx.de
+
+on:
+  push:
+    branches: [main]
+    paths: ['api/**']
+  workflow_dispatch:
+
+jobs:
+  deploy-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject database credentials
+        run: |
+          sed -i "s/%%MYSQL_DB%%/${{ secrets.MySQL_DB }}/g" api/leaderboard.php
+          sed -i "s/%%MYSQL_PW%%/${{ secrets.MySQL_PW }}/g" api/leaderboard.php
+
+      - name: Deploy API via FTP
+        run: |
+          sudo apt-get -qq install -y lftp
+          lftp -e "
+            set ftp:passive-mode on;
+            set ftp:ssl-allow no;
+            mirror -e --delete -R ./api /pacman;
+            ls -la /pacman;
+            bye
+          " -u "${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }}" "${{ secrets.FTP_SITE }}" || echo "FTP deploy done"

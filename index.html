@@ -41,6 +41,35 @@
     .overlay button:active { transform: scale(.95); }
     .overlay .subtitle { color: #aaa; font-size: .85rem; margin-bottom: 20px; }
 
+    #game-timer {
+        position: fixed; top: 54px; right: 12px; z-index: 1500;
+        background: rgba(26,26,46,.85); color: #e2b714;
+        padding: 4px 10px; border-radius: 12px; font-size: .8rem; font-weight: 700;
+        display: none;
+    }
+    .leaderboard-table {
+        width: 100%; max-width: 400px; border-collapse: collapse;
+        margin: 8px auto; font-size: .9rem;
+    }
+    .leaderboard-table th {
+        padding: 8px 12px; text-align: left; color: #e2b714;
+        border-bottom: 2px solid #e2b714; font-size: .8rem;
+    }
+    .leaderboard-table td {
+        padding: 6px 12px; border-bottom: 1px solid #2a2a4a; color: #ccc;
+    }
+    .leaderboard-table .highlight td {
+        color: #e2b714; font-weight: 700; background: rgba(226,183,20,.1);
+    }
+    .name-input {
+        width: 280px; padding: 12px; font-size: 1.1rem;
+        border: 2px solid #e2b714; border-radius: 8px;
+        background: #1a1a2e; color: #fff; text-align: center;
+        outline: none;
+    }
+    .name-input:focus { border-color: #fff; }
+    .name-input::placeholder { color: #666; }
+
     /* ── Desktop hint ──────────────────────────────────────────────── */
     #desktop-hint {
       position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
@@ -138,15 +167,27 @@
   <h1>🎮 PacMan München</h1>
   <p>Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!</p>
   <p class="subtitle">GPS-basiertes Outdoor-Spiel · 3 Leben · 92 Punkte</p>
-  <button id="btn-start">▶ START</button>
-  <p style="margin-top: 14px;"><a href="tutorial.html" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;">📖 Tutorial – So funktioniert's</a></p>
+  <input type="text" id="player-name-input" class="name-input" placeholder="Dein Spielername..." maxlength="50" autocomplete="off" />
+  <button id="btn-start" style="margin-top: 12px;">▶ START</button>
+  <p style="margin-top: 14px;">
+    <a href="tutorial.html" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;">📖 Tutorial – So funktioniert's</a>
+    <span style="margin: 0 8px; color: #444;">|</span>
+    <a href="#" id="btn-show-leaderboard" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;">🏆 Bestenliste</a>
+  </p>
 </div>
 
 <!-- Win Screen -->
 <div class="overlay" id="win-screen" style="display:none">
   <h1 id="win-title"></h1>
+  <p id="win-stats"></p>
   <pre id="win-message"></pre>
-  <p id="win-score"></p>
+  <div id="win-leaderboard"></div>
+  <div class="visibility-toggle" id="visibility-toggle">
+    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:.9rem; color:#aaa; margin: 12px 0;">
+      <input type="checkbox" id="leaderboard-visible" checked />
+      Ergebnis in der Bestenliste anzeigen
+    </label>
+  </div>
   <button id="btn-restart-win">🔄 Nochmal spielen</button>
 </div>
 
@@ -155,7 +196,15 @@
   <h1>💀 Game Over</h1>
   <p>Die Geister haben dich erwischt!</p>
   <p id="go-score"></p>
+  <p id="go-time" style="color:#aaa; font-size:.9rem;"></p>
   <button id="btn-restart-go">🔄 Nochmal spielen</button>
+</div>
+
+<!-- Leaderboard Screen -->
+<div class="overlay" id="leaderboard-screen" style="display:none">
+  <h1>🏆 Bestenliste</h1>
+  <div id="leaderboard-content"></div>
+  <button id="btn-close-leaderboard" style="margin-top: 16px;">← Zurück</button>
 </div>
 
 <!-- Desktop hint -->
@@ -163,6 +212,9 @@
 
 <!-- GPS accuracy -->
 <div id="gps-accuracy">GPS: –</div>
+
+<!-- Game timer -->
+<div id="game-timer">⏱️ 00:00</div>
 
 <!-- Ghost immunity badge -->
 <div id="immunity-badge">🛡️ Geister-Schutz: <span id="immunity-timer">60</span>s</div>
@@ -202,9 +254,10 @@
   const $winScreen    = document.getElementById("win-screen");
   const $winTitle     = document.getElementById("win-title");
   const $winMessage   = document.getElementById("win-message");
-  const $winScore     = document.getElementById("win-score");
+  const $winStats     = document.getElementById("win-stats");
   const $goScreen     = document.getElementById("game-over-screen");
   const $goScore      = document.getElementById("go-score");
+  const $goTime       = document.getElementById("go-time");
   const $desktopHint  = document.getElementById("desktop-hint");
   const $gpsAcc       = document.getElementById("gps-accuracy");
   const $centerBtn    = document.getElementById("center-toggle");
@@ -215,6 +268,12 @@
   const $mysteryResult = document.getElementById("mystery-result");
   const $immunityBadge = document.getElementById("immunity-badge");
   const $immunityTimer = document.getElementById("immunity-timer");
+  const $playerNameInput = document.getElementById("player-name-input");
+  const $gameTimer = document.getElementById("game-timer");
+  const $leaderboardScreen = document.getElementById("leaderboard-screen");
+  const $leaderboardContent = document.getElementById("leaderboard-content");
+  const $winLeaderboard = document.getElementById("win-leaderboard");
+  const $leaderboardVisible = document.getElementById("leaderboard-visible");
 
   // ── State ─────────────────────────────────────────────────────────
   let map, playerMarker, accuracyCircle;
@@ -234,9 +293,111 @@
   let previousLat = null, previousLng = null;
   let pendingMysteryDot = null;
   let immunityTimerInterval = null;
+  let playerName = "";
+  let gameStartTime = 0;
+  let gameTimerInterval = null;
+  let lastEntryId = null;
+
+  const LEADERBOARD_API = "https://qwerx.de/pacman/leaderboard.php";
 
   // Test mode via URL parameter ?test=1
   const isTestMode = new URLSearchParams(window.location.search).has("test");
+
+  // ── Timer functions ────────────────────────────────────────────────
+  function startTimer() {
+      gameStartTime = Date.now();
+      if (gameTimerInterval) clearInterval(gameTimerInterval);
+      gameTimerInterval = setInterval(() => {
+          const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+          const mins = String(Math.floor(elapsed / 60)).padStart(2, "0");
+          const secs = String(elapsed % 60).padStart(2, "0");
+          $gameTimer.textContent = `⏱️ ${mins}:${secs}`;
+      }, 1000);
+      $gameTimer.style.display = "block";
+  }
+
+  function stopTimer() {
+      if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
+  }
+
+  function getElapsedSeconds() {
+      return Math.floor((Date.now() - gameStartTime) / 1000);
+  }
+
+  function formatTime(totalSeconds) {
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      return `${mins}:${String(secs).padStart(2, "0")}`;
+  }
+
+  // ── Leaderboard functions ──────────────────────────────────────────
+  async function fetchLeaderboard() {
+      try {
+          const res = await fetch(`${LEADERBOARD_API}?action=top`);
+          const data = await res.json();
+          return data.leaderboard || [];
+      } catch (e) {
+          console.warn("Leaderboard fetch failed:", e);
+          return [];
+      }
+  }
+
+  async function submitScore(visible) {
+      const timeSeconds = getElapsedSeconds();
+      try {
+          const res = await fetch(`${LEADERBOARD_API}?action=submit`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                  player_name: playerName,
+                  score: score,
+                  time_seconds: timeSeconds,
+                  dots_collected: collectedCount,
+                  lives_remaining: lives,
+                  visible: visible ? 1 : 0
+              })
+          });
+          const data = await res.json();
+          lastEntryId = data.id;
+          return data.leaderboard || [];
+      } catch (e) {
+          console.warn("Score submit failed:", e);
+          return [];
+      }
+  }
+
+  async function toggleVisibility(id, visible) {
+      try {
+          await fetch(`${LEADERBOARD_API}?action=toggle`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id, visible: visible ? 1 : 0 })
+          });
+      } catch (e) {
+          console.warn("Toggle failed:", e);
+      }
+  }
+
+  function renderLeaderboard(entries, container, highlightId) {
+      if (!entries || entries.length === 0) {
+          container.innerHTML = '<p style="color:#666; font-size:.9rem;">Noch keine Einträge</p>';
+          return;
+      }
+      let html = '<table class="leaderboard-table"><thead><tr><th>#</th><th>Spieler</th><th>Punkte</th><th>Zeit</th></tr></thead><tbody>';
+      entries.forEach((e, i) => {
+          const isMe = highlightId && parseInt(e.id) === parseInt(highlightId);
+          const cls = isMe ? ' class="highlight"' : '';
+          html += `<tr${cls}><td>${i + 1}</td><td>${escapeHtml(e.player_name)}</td><td>${e.score}</td><td>${formatTime(parseInt(e.time_seconds))}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+  }
+
+  function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+  }
 
   // ── Cache-type icon URLs ──────────────────────────────────────────
   const ICON_URLS = {
@@ -733,19 +894,36 @@
   }
 
   // ── End states ────────────────────────────────────────────────────
-  function win() {
+  async function win() {
     gameRunning = false;
+    stopTimer();
     soundWin();
+    const timeSeconds = getElapsedSeconds();
     $winTitle.textContent = GAME_CONFIG.winTitle;
     $winMessage.textContent = GAME_CONFIG.winMessage;
-    $winScore.textContent = `Dein Punktestand: ${score}`;
+    $winStats.textContent = `Punkte: ${score} · Zeit: ${formatTime(timeSeconds)} · Leben: ${lives}/3`;
     $winScreen.style.display = "flex";
+
+    // Submit score (visible by default)
+    $leaderboardVisible.checked = true;
+    const entries = await submitScore(true);
+    renderLeaderboard(entries, $winLeaderboard, lastEntryId);
+
+    // Toggle visibility listener
+    $leaderboardVisible.onchange = async () => {
+        if (lastEntryId) {
+            await toggleVisibility(lastEntryId, $leaderboardVisible.checked);
+        }
+    };
   }
 
   function gameOver() {
     gameRunning = false;
+    stopTimer();
     soundGameOver();
+    const timeSeconds = getElapsedSeconds();
     $goScore.textContent = `Dein Punktestand: ${score}`;
+    $goTime.textContent = `Zeit: ${formatTime(timeSeconds)}`;
     $goScreen.style.display = "flex";
   }
 
@@ -758,6 +936,8 @@
     ghostObjects = [];
 
     score = 0; lives = 3; collectedCount = 0; immuneUntil = 0;
+    gameStartTime = 0;
+    lastEntryId = null;
     pendingMysteryDot = null;
     if (immunityTimerInterval) { clearInterval(immunityTimerInterval); immunityTimerInterval = null; }
     $immunityBadge.style.display = "none";
@@ -770,6 +950,7 @@
     $winScreen.style.display = "none";
     $goScreen.style.display = "none";
     gameRunning = true;
+    startTimer();
   }
 
   // ── GPS setup ─────────────────────────────────────────────────────
@@ -846,6 +1027,16 @@
 
   // ── Start game ────────────────────────────────────────────────────
   function startGame() {
+    const name = $playerNameInput.value.trim();
+    if (!name) {
+        $playerNameInput.style.borderColor = "#f44";
+        $playerNameInput.focus();
+        $playerNameInput.placeholder = "Bitte Namen eingeben!";
+        return;
+    }
+    playerName = name;
+    sessionStorage.setItem("pacman_player_name", name);
+
     ensureAudio();
     $startScreen.style.display = "none";
     $header.style.display = "flex";
@@ -858,6 +1049,7 @@
     updateHeader();
     startGPS();
     initCompass();
+    startTimer();
 
     requestAnimationFrame(ghostLoop);
   }
@@ -871,6 +1063,22 @@
     updateCenterBtn();
     if (autoCenter && playerLat !== null) map.panTo([playerLat, playerLng]);
   });
+
+  // Leaderboard from start screen
+  document.getElementById("btn-show-leaderboard").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const entries = await fetchLeaderboard();
+      renderLeaderboard(entries, $leaderboardContent, null);
+      $leaderboardScreen.style.display = "flex";
+  });
+
+  document.getElementById("btn-close-leaderboard").addEventListener("click", () => {
+      $leaderboardScreen.style.display = "none";
+  });
+
+  // Restore player name from session
+  const savedName = sessionStorage.getItem("pacman_player_name");
+  if (savedName) $playerNameInput.value = savedName;
 
 })();
 </script>
