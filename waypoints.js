@@ -117,7 +117,7 @@ const GAME_CONFIG = {
     { lat: 48.12461, lng: 11.56400, type: "traditional", label: "Punkt 76" },
     { lat: 48.12465, lng: 11.56388, type: "earth", label: "Punkt 77" },
     { lat: 48.12468, lng: 11.56377, type: "mystery", label: "Punkt 78",
-      question: "Wie heisst der Friedhof auf dem du stehst?", answer: "alter suedlicher friedhof" },
+      question: "Wieviele Ausgänge hat der Friedhof auf dem du stehst?", answer: "4" },
     { lat: 48.12476, lng: 11.56356, type: "traditional", label: "Punkt 79" },
     { lat: 48.12480, lng: 11.56344, type: "traditional", label: "Punkt 80" },
     { lat: 48.12484, lng: 11.56332, type: "multi", label: "Punkt 81" },
@@ -138,7 +138,8 @@ const GAME_CONFIG = {
     { lat: 48.12609, lng: 11.56464, type: "letterbox", label: "Punkt 96" },
     { lat: 48.12638, lng: 11.56377, type: "traditional", label: "Punkt 97" },
     { lat: 48.12502, lng: 11.56277, type: "event", label: "Punkt 98" },
-    { lat: 48.12487, lng: 11.56323, type: "traditional", label: "Punkt 99" }
+    { lat: 48.12487, lng: 11.56323, type: "traditional", label: "Punkt 99" },
+    { lat: 48.12476, lng: 11.56356, type: "traditional", label: "Punkt 100" }
   ],
 
   // ---------------------------------------------------------------------------
