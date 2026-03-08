@@ -1,11 +1,13 @@
 <?php
 /**
- * PacMan München – Leaderboard API v1.3
+ * PacMan München – Leaderboard API v1.4
  * 
  * Endpoints:
- *   GET  ?action=top     → Top 20 sichtbare Einträge
- *   POST ?action=submit  → Neuen Eintrag speichern (JSON body)
- *   POST ?action=toggle  → Sichtbarkeit umschalten (JSON body mit id + visible)
+ *   GET  ?action=top        → Top 20 sichtbare Einträge
+ *   POST ?action=submit     → Neuen Eintrag speichern (JSON body)
+ *   POST ?action=toggle     → Sichtbarkeit umschalten (JSON body mit id + visible)
+ *   POST ?action=notify     → E-Mail bei Spielstart senden (JSON body mit player_name)
+ *   POST ?action=notify_win → E-Mail bei Spielende senden (JSON body mit player_name, score, time_seconds)
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -33,6 +35,35 @@ if (($_GET['action'] ?? '') === 'notify') {
     $to      = 'drumpldeer@gmail.com';
     $subject = 'PacMan von ' . $safeName;
     $message = $safeName . ' hat ein PacMan-Spiel gestartet.';
+    $headers = 'From: pacman@qwerx.de';
+    if (mail($to, $subject, $message, $headers)) {
+        echo json_encode(['success' => true]);
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to send email']);
+    }
+    exit;
+}
+
+// Notify-win action – send email when game is completed (no DB required)
+if (($_GET['action'] ?? '') === 'notify_win') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $name = isset($data['player_name']) ? mb_substr(trim($data['player_name']), 0, 50) : '';
+    if ($name === '') {
+        http_response_code(400);
+        echo json_encode(['error' => 'player_name required']);
+        exit;
+    }
+    $score       = intval($data['score'] ?? 0);
+    $timeSeconds = intval($data['time_seconds'] ?? 0);
+    $minutes     = intdiv($timeSeconds, 60);
+    // Strip newlines to prevent email header injection via the subject
+    $safeName = str_replace(["\r", "\n"], '', $name);
+    $to      = 'drumpldeer@gmail.com';
+    $subject = $safeName . ' hat PacMan in ' . $minutes . ' Minuten mit ' . $score . ' Punkten beendet';
+    $message = $safeName . ' hat PacMan erfolgreich beendet.'
+        . "\nZeit: " . $minutes . ' Minuten'
+        . "\nPunkte: " . $score;
     $headers = 'From: pacman@qwerx.de';
     if (mail($to, $subject, $message, $headers)) {
         echo json_encode(['success' => true]);
