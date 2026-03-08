@@ -135,7 +135,7 @@ const GAME_CONFIG = {
     { lat: 48.12506, lng: 11.56447, type: "letterbox", label: "Punkt 96" },
     { lat: 48.12506, lng: 11.56447, type: "tradi", label: "Punkt 97" },
     { lat: 48.12506, lng: 11.56447, type: "event", label: "Punkt 98" },
-    { lat: 48.12506, lng: 11.56447, type: "tradi", label: "Punkt 99" },
+    { lat: 48.12506, lng: 11.56447, type: "tradi", label: "Punkt 99" }
   ],
 
   // ---------------------------------------------------------------------------
