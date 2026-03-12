@@ -15,7 +15,6 @@ jobs:
       - name: Inject database credentials
         run: |
           sed -i "s/%%MYSQL_DB%%/${{ secrets.MySQL_DB }}/g" api/leaderboard.php
-          sed -i "s/%%MYSQL_USER%%/${{ secrets.MySQL_USER }}/g" api/leaderboard.php
           sed -i "s/%%MYSQL_PW%%/${{ secrets.MySQL_PW }}/g" api/leaderboard.php
 
       - name: Deploy API via FTP
