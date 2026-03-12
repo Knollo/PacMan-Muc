@@ -24,4 +24,4 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./api/
-          server-dir: /pacman/
+          server-dir: /pacman/api/
