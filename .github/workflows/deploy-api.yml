@@ -1,4 +1,4 @@
-name: Deploy API to qwerx.de
+name: Deploy API via SSH
 
 on:
   push:
@@ -17,11 +17,14 @@ jobs:
           sed -i "s/%%MYSQL_DB%%/${{ secrets.MySQL_DB }}/g" api/leaderboard.php
           sed -i "s/%%MYSQL_PW%%/${{ secrets.MySQL_PW }}/g" api/leaderboard.php
 
-      - name: Deploy API via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy API via SSH
+        uses: appleboy/ssh-action@master
         with:
-          server: ${{ secrets.FTP_SITE }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./api/
-          server-dir: /pacman/api/
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.SSH_DEPLOY_PATH }}/api
+            git fetch origin main
+            git checkout origin/main -- api/
+            echo "✅ API deployed successfully"

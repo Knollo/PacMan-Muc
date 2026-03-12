@@ -1,4 +1,4 @@
-name: Deploy to FTP
+name: Deploy Website via SSH
 
 on:
   push:
@@ -13,11 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Website via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy Website via SSH
+        uses: appleboy/ssh-action@master
         with:
-          server: ${{ secrets.FTP_SITE }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: /pacman/
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.SSH_DEPLOY_PATH }}
+            git fetch origin main
+            git checkout origin/main -- . --exclude=api/
+            echo "✅ Website deployed successfully"
