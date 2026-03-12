@@ -14,13 +14,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy Website via SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ secrets.SSH_DEPLOY_PATH }}
-            git fetch origin main
-            git checkout origin/main -- . --exclude=api/
-            echo "✅ Website deployed successfully"
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_DEPLOY_PATH: ${{ secrets.SSH_DEPLOY_PATH }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST "cd $SSH_DEPLOY_PATH && git fetch origin main && git checkout origin/main -- . --exclude=api/ && echo '✅ Website deployed successfully'"
