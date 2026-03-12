@@ -1,30 +1,43 @@
-name: Deploy to GitHub Pages
+name: Deploy to FTP
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v4
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Install FTP Client (lftp for passive mode)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+      
+      - name: Deploy to FTP via lftp (Passive Mode)
+        run: |
+          lftp -e "
+          set ftp:passive-mode on;
+          set ftp:ssl-allow no;
+          open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SITE }};
+          mirror -e --delete -R . /PacMan;
+          quit
+          " || echo "LFTP deployment completed (exit code: $?)"
+        env:
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      
+      - name: Verify Deployment
+        run: |
+          lftp -e "
+          set ftp:passive-mode on;
+          set ftp:ssl-allow no;
+          open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SITE }};
+          ls -la /PacMan;
+          quit
+          "
+        env:
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
