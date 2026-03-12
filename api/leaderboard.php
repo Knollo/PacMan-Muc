@@ -45,9 +45,9 @@ if (($_GET['action'] ?? '') === 'notify') {
 
 // Database credentials – injected by GitHub Actions deploy
 $DB_HOST = 'qwerx.de';
-$DB_NAME = '%%MYSQL_DB%%'; // Injected by GitHub Actions
-$DB_USER = '%%MYSQL_USER%%'; // Injected by GitHub Actions
-$DB_PASS = '%%MYSQL_PW%%'; // Injected by GitHub Actions
+$DB_NAME = 'd0466fe0'; // Injected by GitHub Actions
+$DB_USER = 'd0466fe0'; // Injected by GitHub Actions
+$DB_PASS = 'Tamprix#2026'; // Injected by GitHub Actions
 
 // Win message – only delivered server-side after game completion
 $WIN_MESSAGE = "Du hast alle Punkte gesammelt! Hier ist dein Geocache-Hinweis:\n\n"
