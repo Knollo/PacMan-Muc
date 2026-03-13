@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gpx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns="http://www.topografix.com/GPX/1/1" creator="Flopp's Map - http://flopp.net/" xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd  http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www.garmin.com/xmlschemas/WaypointExtensionv1.xsd" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3">
+    <metadata>
+        <name>Export from Flopp's Map (flopp.net)</name>
+    </metadata>
+<wpt lat="48.12650546" lon="11.56338394">
+    <name>A</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12646607" lon="11.56351134">
+    <name>B</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12642400" lon="11.56364009">
+    <name>C</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12634612" lon="11.56388283">
+    <name>D</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12630852" lon="11.56399816">
+    <name>E</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12627003" lon="11.56411216">
+    <name>F</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12650940" lon="11.56328201">
+    <name>G</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12619842" lon="11.56432539">
+    <name>H</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12615634" lon="11.56444475">
+    <name>I</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12612322" lon="11.56454802">
+    <name>J</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12605429" lon="11.56475723">
+    <name>K</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12601848" lon="11.56458020">
+    <name>M</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12601490" lon="11.56488061">
+    <name>N</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12589674" lon="11.56448901">
+    <name>O</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12597552" lon="11.56500399">
+    <name>P</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12576962" lon="11.56439245">
+    <name>Q</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12564967" lon="11.56431198">
+    <name>R</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12551360" lon="11.56421810">
+    <name>S</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12559059" lon="11.56362534">
+    <name>T</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12544437" lon="11.56407326">
+    <name>U</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12548675" lon="11.56394988">
+    <name>V</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12561565" lon="11.56375945">
+    <name>W</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12569861" lon="11.56382114">
+    <name>X</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12582393" lon="11.56392306">
+    <name>Y</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12593971" lon="11.56400353">
+    <name>Z</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12605250" lon="11.56408936">
+    <name>A2</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12615276" lon="11.56416446">
+    <name>B2</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12563177" lon="11.56351000">
+    <name>C2</name>
+    <desc>color="209cee"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12629778" lon="11.56372547">
+    <name>D2</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12564072" lon="11.56264365">
+    <name>E2</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12576962" lon="11.56273216">
+    <name>G2</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12643743" lon="11.56322300">
+    <name>H2</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12630136" lon="11.56312644">
+    <name>I2</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12617783" lon="11.56303525">
+    <name>J2</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12606324" lon="11.56294942">
+    <name>K2</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12593613" lon="11.56286895">
+    <name>L2</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12582154" lon="11.56292528">
+    <name>M2</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12578126" lon="11.56304598">
+    <name>N2</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12567832" lon="11.56337321">
+    <name>O2</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12573740" lon="11.56318411">
+    <name>P2</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12582513" lon="11.56335175">
+    <name>Q2</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12594687" lon="11.56344831">
+    <name>R2</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12609010" lon="11.56355023">
+    <name>S2</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12620468" lon="11.56364679">
+    <name>T2</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12545273" lon="11.56310499">
+    <name>U2</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12534531" lon="11.56301379">
+    <name>V2</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12522356" lon="11.56292796">
+    <name>W2</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12511972" lon="11.56284213">
+    <name>X2</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12505795" lon="11.56265974">
+    <name>Y2</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12509644" lon="11.56253770">
+    <name>Z2</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12514120" lon="11.56240493">
+    <name>A3</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12519491" lon="11.56231642">
+    <name>B3</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12529338" lon="11.56238616">
+    <name>C3</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12540976" lon="11.56247199">
+    <name>D3</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12552613" lon="11.56255782">
+    <name>E3</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12530234" lon="11.56449839">
+    <name>F3</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12533993" lon="11.56465799">
+    <name>H3</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12547063" lon="11.56474918">
+    <name>I3</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12560312" lon="11.56485111">
+    <name>J3</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12572486" lon="11.56493962">
+    <name>M3</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12552792" lon="11.56381577">
+    <name>N3</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12585198" lon="11.56503618">
+    <name>O3</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12592718" lon="11.56508714">
+    <name>P3</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12497648" lon="11.56330615">
+    <name>R3</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12509823" lon="11.56339467">
+    <name>S3</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12559238" lon="11.56320691">
+    <name>T3</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12520924" lon="11.56347513">
+    <name>U3</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12530234" lon="11.56353951">
+    <name>V3</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12540618" lon="11.56361461">
+    <name>W3</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12549212" lon="11.56367898">
+    <name>X3</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12538827" lon="11.56424090">
+    <name>Y3</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12534531" lon="11.56437367">
+    <name>Z3</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12492993" lon="11.56437635">
+    <name>A4</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12480819" lon="11.56428516">
+    <name>B4</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12467391" lon="11.56418860">
+    <name>C4</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12460766" lon="11.56400084">
+    <name>D4</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12465063" lon="11.56387746">
+    <name>E4</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12468375" lon="11.56376883">
+    <name>F4</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12476074" lon="11.56355560">
+    <name>G4</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12479744" lon="11.56344295">
+    <name>H4</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12483683" lon="11.56332225">
+    <name>I4</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12498544" lon="11.56287432">
+    <name>J4</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12494515" lon="11.56299770">
+    <name>K4</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12490487" lon="11.56311169">
+    <name>L4</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12483683" lon="11.56373262">
+    <name>M4</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12459602" lon="11.56411350">
+    <name>N4</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12496694" lon="11.56381309">
+    <name>O4</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12508033" lon="11.56389624">
+    <name>P4</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12520745" lon="11.56398743">
+    <name>Q4</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12532024" lon="11.56406522">
+    <name>R4</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12518238" lon="11.56455070">
+    <name>S4</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12505884" lon="11.56446755">
+    <name>T4</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12526116" lon="11.56461239">
+    <name>U4</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12585914" lon="11.56280726">
+    <name>V4</name>
+    <desc>color="FF3860"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12622975" lon="11.56422526">
+    <name>W4</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12608562" lon="11.56464323">
+    <name>X4</name>
+    <desc>color="23D160"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12637924" lon="11.56377196">
+    <name>Y4</name>
+    <desc>color="3273DC"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12502035" lon="11.56276971">
+    <name>Z4</name>
+    <desc>color="209CEE"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12486638" lon="11.56322703">
+    <name>A5</name>
+    <desc>color="00D1B2"</desc>
+    <sym>flag</sym>
+</wpt>
+<wpt lat="48.12472583" lon="11.56366065">
+    <name>B5</name>
+    <desc>color="FFDD57"</desc>
+    <sym>flag</sym>
+</wpt>
+</gpx>

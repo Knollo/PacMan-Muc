@@ -76,6 +76,32 @@
         background: #e2b714; color: #0f0f23;
     }
 
+    /* ── Webcam ghost overlay ─────────────────────────────────────── */
+    #webcam-overlay {
+      display: none; position: fixed; inset: 0; z-index: 2700;
+      background: rgba(0,0,0,.88);
+      flex-direction: column; align-items: center; justify-content: center;
+    }
+    #webcam-overlay.visible { display: flex; }
+    #webcam-overlay .ghost-photo {
+      position: relative; width: 280px; height: 280px;
+      background: linear-gradient(135deg, #1a1a2e, #2a2a4a);
+      border-radius: 20px; border: 3px solid #e2b714;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    #webcam-overlay .ghost-emoji {
+      font-size: 10rem; animation: ghostBounce 0.6s ease-in-out infinite alternate;
+    }
+    #webcam-overlay .ghost-label {
+      color: #e2b714; font-size: 1.3rem; font-weight: 700; margin-top: 18px;
+      text-align: center;
+    }
+    @keyframes ghostBounce {
+      from { transform: scale(1) rotate(-5deg); }
+      to   { transform: scale(1.15) rotate(5deg); }
+    }
+
     .leaderboard-table {
         width: 100%; max-width: 400px; border-collapse: collapse;
         margin: 8px auto; font-size: .9rem;
@@ -195,7 +221,7 @@
 <div class="overlay" id="start-screen">
   <h1>🎮 PacMan München</h1>
   <p>Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!</p>
-  <p class="subtitle">GPS-basiertes Outdoor-Spiel · 3 Leben · 99 Punkte</p>
+  <p class="subtitle">GPS-basiertes Outdoor-Spiel · 3 Leben · 100 Caches</p>
   <input type="text" id="player-name-input" class="name-input" placeholder="Dein Spielername..." maxlength="50" autocomplete="off" />
   <button id="btn-start" style="margin-top: 12px;">▶ START</button>
   <p style="margin-top: 14px;">
@@ -252,7 +278,7 @@
 <div id="help-overlay">
   <div class="help-content">
     <h2>🎯 Spielidee</h2>
-    <p>Sammle alle 99 Caches im Alten Südlichen Friedhof – aber pass auf die Geister auf!</p>
+    <p>Sammle alle 100 Caches im Alten Südlichen Friedhof – aber pass auf die Geister auf!</p>
 
     <h2>🚶 Steuerung</h2>
     <ul>
@@ -263,11 +289,14 @@
 
     <h2>📦 Cache-Typen</h2>
     <ul>
-      <li>🟢 Traditional: 10 Pkt</li>
-      <li>🔵 Multi: 15 Pkt</li>
-      <li>🟡 Virtual: 20 Pkt + ❤️ Leben</li>
+      <li>🟢 Traditional: 5 Pkt</li>
+      <li>🔵 Multi: 10 Pkt</li>
+      <li>📬 Letterbox: 15 Pkt</li>
+      <li>🔮 Mystery: 20 Pkt + 60s Schutz</li>
+      <li>🟡 Virtual: 25 Pkt + ❤️ Leben</li>
       <li>🟤 Earth: 25 Pkt</li>
-      <li>🔮 Mystery: 50 Pkt + 60s Schutz</li>
+      <li>📷 Webcam: 25 Pkt</li>
+      <li>🎪 Event: 30 Pkt</li>
     </ul>
 
     <h2>👻 Geister</h2>
@@ -277,7 +306,7 @@
       <li>🩵 Inky – unberechenbar</li>
       <li>🟠 Stinky – wird schneller in deiner Nähe</li>
     </ul>
-    <p>Nach einem Treffer: 30s Schutz 🛡️</p>
+    <p>Treffer: −50 Punkte + Leben verloren · 30s Schutz 🛡️</p>
   </div>
   <button class="help-close" id="btn-close-help">✕ Schließen</button>
 </div>
@@ -299,6 +328,14 @@
 
 <!-- Auto-center toggle -->
 <button id="center-toggle" style="display:none">📍 Zentrieren</button>
+
+<!-- Webcam ghost overlay -->
+<div id="webcam-overlay">
+  <div class="ghost-photo">
+    <span class="ghost-emoji">👻</span>
+  </div>
+  <div class="ghost-label">📸 Webcam-Cache gefunden!<br>Der Geist sagt: Cheeeese! 😂</div>
+</div>
 
 <!-- Ghost-hit flash -->
 <div id="flash"></div>
@@ -338,6 +375,7 @@
   const $gameTimer = document.getElementById("game-timer");
   const $helpBtn = document.getElementById("help-btn");
   const $helpOverlay = document.getElementById("help-overlay");
+  const $webcamOverlay = document.getElementById("webcam-overlay");
   const $leaderboardScreen = document.getElementById("leaderboard-screen");
   const $leaderboardContent = document.getElementById("leaderboard-content");
   const $winLeaderboard = document.getElementById("win-leaderboard");
@@ -515,6 +553,10 @@
   }
   function soundGameOver() {
     [440, 370, 311, 261].forEach((f, i) => setTimeout(() => playTone(f, 0.22, "sawtooth", 0.12), i * 180));
+  }
+  function soundGhostLaugh() {
+    const freqs = [800, 700, 600, 500, 700, 600, 500, 400, 600, 500, 400, 300];
+    freqs.forEach((f, i) => setTimeout(() => playTone(f, 0.12, "sawtooth", 0.18), i * 100));
   }
 
   // ── Haversine distance (meters) ──────────────────────────────────
@@ -859,6 +901,11 @@
       showMysteryQuiz(dot.data);
       return;
     }
+    // Webcam waypoints show ghost photo effect
+    if (dot.data.type === "webcam") {
+      showWebcamEffect(dot);
+      return;
+    }
     finalizeCollect(dot);
   }
 
@@ -934,6 +981,16 @@
     }
   }
 
+  // ── Webcam ghost photo effect ────────────────────────────────────
+  function showWebcamEffect(dot) {
+    soundGhostLaugh();
+    $webcamOverlay.classList.add("visible");
+    setTimeout(() => {
+      $webcamOverlay.classList.remove("visible");
+      finalizeCollect(dot);
+    }, 3000);
+  }
+
   function activateImmunity(seconds) {
     immuneUntil = Date.now() + seconds * 1000;
     $immunityBadge.style.display = "block";
@@ -956,6 +1013,7 @@
 
   function ghostHit() {
     lives--;
+    score = Math.max(0, score - 50);
     activateImmunity(GAME_CONFIG.immunityDuration || 5);
     soundGhostHit();
     flashRed();
