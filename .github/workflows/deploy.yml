@@ -1,4 +1,4 @@
-name: Deploy Website via SSH
+name: Deploy to FTP
 
 on:
   push:
@@ -9,45 +9,19 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup SSH
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          python3 << 'PYEOF'
-          import os
-          key = os.environ['SSH_PRIVATE_KEY']
-          key = key.replace('\\n', '\n').replace('\\r', '').replace('\r', '')
-          if not key.endswith('\n'):
-              key += '\n'
-          path = os.path.expanduser('~/.ssh/deploy_key')
-          with open(path, 'w') as f:
-              f.write(key)
-          os.chmod(path, 0o600)
-          print(f"Key lines: {key.count(chr(10))}")
-          PYEOF
-          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
-          ssh-keygen -l -f ~/.ssh/deploy_key 2>&1 || {
-            echo "⚠️ Key validation failed. Check SSH_PRIVATE_KEY secret format."
-            echo "Expected: PEM format with -----BEGIN ... PRIVATE KEY----- header"
-            exit 1
-          }
-
-      - name: Deploy Website via SCP
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_DEPLOY_PATH: ${{ secrets.SSH_DEPLOY_PATH }}
-        run: |
-          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new \
-            index.html test.html tutorial.html waypoints.js \
-            "$SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH/"
-          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new \
-            -r Images \
-            "$SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH/"
-          echo "✅ Website deployed successfully"
+      - name: Deploy Website via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SITE }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /pacman/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            api/**

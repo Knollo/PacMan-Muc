@@ -1,4 +1,4 @@
-name: Deploy API via SSH
+name: Deploy API to qwerx.de
 
 on:
   push:
@@ -17,39 +17,11 @@ jobs:
           sed -i "s/%%MYSQL_DB%%/${{ secrets.MySQL_DB }}/g" api/leaderboard.php
           sed -i "s/%%MYSQL_PW%%/${{ secrets.MySQL_PW }}/g" api/leaderboard.php
 
-      - name: Setup SSH
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          python3 << 'PYEOF'
-          import os
-          key = os.environ['SSH_PRIVATE_KEY']
-          key = key.replace('\\n', '\n').replace('\\r', '').replace('\r', '')
-          if not key.endswith('\n'):
-              key += '\n'
-          path = os.path.expanduser('~/.ssh/deploy_key')
-          with open(path, 'w') as f:
-              f.write(key)
-          os.chmod(path, 0o600)
-          print(f"Key lines: {key.count(chr(10))}")
-          PYEOF
-          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
-          ssh-keygen -l -f ~/.ssh/deploy_key 2>&1 || {
-            echo "⚠️ Key validation failed. Check SSH_PRIVATE_KEY secret format."
-            echo "Expected: PEM format with -----BEGIN ... PRIVATE KEY----- header"
-            exit 1
-          }
-
-      - name: Deploy API via SCP
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_DEPLOY_PATH: ${{ secrets.SSH_DEPLOY_PATH }}
-        run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new \
-            "$SSH_USER@$SSH_HOST" "mkdir -p $SSH_DEPLOY_PATH/api"
-          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new \
-            api/leaderboard.php "$SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH/api/"
-          echo "✅ API deployed successfully (with credentials injected)"
+      - name: Deploy API via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SITE }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./api/
+          server-dir: /pacman/api/
