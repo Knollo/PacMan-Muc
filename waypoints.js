@@ -18,14 +18,14 @@ const GAME_CONFIG = {
 
   // Score per cache type
   scoreValues: {
-    traditional: 10,
-    multi: 15,
+    traditional: 5,
+    multi: 10,
     letterbox: 15,
-    mystery: 50,
-    virtual: 20,
-    event: 25,
+    mystery: 20,
+    virtual: 25,
+    event: 30,
     earth: 25,
-    webcam: 20
+    webcam: 25
   },
 
   // ---------------------------------------------------------------------------
@@ -78,7 +78,7 @@ const GAME_CONFIG = {
     { lat: 48.12595, lng: 11.56345, type: "traditional", label: "Punkt 42" },
     { lat: 48.12609, lng: 11.56355, type: "traditional", label: "Punkt 43" },
     { lat: 48.12620, lng: 11.56365, type: "traditional", label: "Punkt 44" },
-    { lat: 48.12545, lng: 11.56310, type: "traditional", label: "Punkt 45" },
+    { lat: 48.12545, lng: 11.56310, type: "letterbox", label: "Punkt 45" },
     { lat: 48.12535, lng: 11.56301, type: "traditional", label: "Punkt 46" },
     { lat: 48.12522, lng: 11.56293, type: "traditional", label: "Punkt 47" },
     { lat: 48.12512, lng: 11.56284, type: "traditional", label: "Punkt 48" },
@@ -96,7 +96,7 @@ const GAME_CONFIG = {
     { lat: 48.12572, lng: 11.56494, type: "traditional", label: "Punkt 60" },
     { lat: 48.12553, lng: 11.56382, type: "earth", label: "Punkt 61" },
     { lat: 48.12585, lng: 11.56504, type: "multi", label: "Punkt 62" },
-    { lat: 48.12593, lng: 11.56509, type: "multi", label: "Punkt 63" },
+    { lat: 48.12593, lng: 11.56509, type: "webcam", label: "Punkt 63" },
     { lat: 48.12498, lng: 11.56331, type: "virtual", label: "Punkt 64" },
     { lat: 48.12510, lng: 11.56339, type: "virtual", label: "Punkt 65" },
     { lat: 48.12559, lng: 11.56321, type: "virtual", label: "Punkt 66" },
