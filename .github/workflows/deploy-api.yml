@@ -23,12 +23,24 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
-          # Handle keys stored as single line with literal \n
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | sed 's/\\n/\n/g' > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
+          python3 << 'PYEOF'
+          import os
+          key = os.environ['SSH_PRIVATE_KEY']
+          key = key.replace('\\n', '\n').replace('\\r', '').replace('\r', '')
+          if not key.endswith('\n'):
+              key += '\n'
+          path = os.path.expanduser('~/.ssh/deploy_key')
+          with open(path, 'w') as f:
+              f.write(key)
+          os.chmod(path, 0o600)
+          print(f"Key lines: {key.count(chr(10))}")
+          PYEOF
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
-          echo "Key lines: $(wc -l < ~/.ssh/deploy_key)"
-          ssh-keygen -l -f ~/.ssh/deploy_key 2>&1 || echo "⚠️ Key validation failed"
+          ssh-keygen -l -f ~/.ssh/deploy_key 2>&1 || {
+            echo "⚠️ Key validation failed. Check SSH_PRIVATE_KEY secret format."
+            echo "Expected: PEM format with -----BEGIN ... PRIVATE KEY----- header"
+            exit 1
+          }
 
       - name: Deploy API via SCP
         env:
