@@ -9,19 +9,28 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Website via SSH
+      - name: Setup SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy Website via SCP
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_DEPLOY_PATH: ${{ secrets.SSH_DEPLOY_PATH }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts 2>/dev/null
-          ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST "cd $SSH_DEPLOY_PATH && git fetch origin main && git checkout origin/main -- . --exclude=api/ && echo '✅ Website deployed successfully'"
+          SCP_OPTS="-i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new"
+          DEST="$SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH"
+          scp $SCP_OPTS index.html test.html tutorial.html waypoints.js "$DEST/"
+          scp $SCP_OPTS -r Images "$DEST/"
+          echo "✅ Website deployed successfully"

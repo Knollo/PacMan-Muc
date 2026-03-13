@@ -49,6 +49,33 @@
         padding: 4px 10px; border-radius: 12px; font-size: .8rem; font-weight: 700;
         display: none;
     }
+
+    /* ── Help button ─────────────────────────────────────────────── */
+    #help-btn {
+        position: fixed; top: 54px; left: 12px; z-index: 1500;
+        background: rgba(26,26,46,.85); color: #e2b714; border: 1px solid #e2b714;
+        width: 32px; height: 32px; border-radius: 50%; font-size: 1rem;
+        cursor: pointer; display: none; line-height: 1;
+    }
+    #help-overlay {
+        position: fixed; inset: 0; z-index: 2600;
+        display: none; flex-direction: column; align-items: center;
+        background: rgba(15,15,35,.95); padding: 24px; overflow-y: auto;
+    }
+    #help-overlay.visible { display: flex; }
+    #help-overlay .help-content {
+        max-width: 420px; width: 100%; text-align: left; color: #ccc;
+        font-size: .85rem; line-height: 1.6;
+    }
+    #help-overlay .help-content h2 { color: #e2b714; font-size: 1.2rem; margin: 16px 0 8px; }
+    #help-overlay .help-content h2:first-child { margin-top: 0; }
+    #help-overlay .help-content ul { padding-left: 20px; margin-bottom: 8px; }
+    #help-overlay .help-close {
+        margin-top: 20px; padding: 12px 40px; font-size: 1rem; font-weight: 700;
+        border: none; border-radius: 10px; cursor: pointer;
+        background: #e2b714; color: #0f0f23;
+    }
+
     .leaderboard-table {
         width: 100%; max-width: 400px; border-collapse: collapse;
         margin: 8px auto; font-size: .9rem;
@@ -218,6 +245,43 @@
 <!-- Game timer -->
 <div id="game-timer">⏱️ 00:00</div>
 
+<!-- Help button (shown during game) -->
+<button id="help-btn">❓</button>
+
+<!-- Help overlay -->
+<div id="help-overlay">
+  <div class="help-content">
+    <h2>🎯 Spielidee</h2>
+    <p>Sammle alle 99 Caches im Alten Südlichen Friedhof – aber pass auf die Geister auf!</p>
+
+    <h2>🚶 Steuerung</h2>
+    <ul>
+      <li>Dein GPS bewegt den PacMan automatisch</li>
+      <li>Laufe nahe an Caches heran (~10m) zum Einsammeln</li>
+      <li>Halte 5m Abstand zu Geistern!</li>
+    </ul>
+
+    <h2>📦 Cache-Typen</h2>
+    <ul>
+      <li>🟢 Traditional: 10 Pkt</li>
+      <li>🔵 Multi: 15 Pkt</li>
+      <li>🟡 Virtual: 20 Pkt + ❤️ Leben</li>
+      <li>🟤 Earth: 25 Pkt</li>
+      <li>🔮 Mystery: 50 Pkt + 60s Schutz</li>
+    </ul>
+
+    <h2>👻 Geister</h2>
+    <ul>
+      <li>🔴 Blinky – verfolgt dich direkt</li>
+      <li>🩷 Pinky – schneidet dir den Weg ab</li>
+      <li>🩵 Inky – unberechenbar</li>
+      <li>🟠 Stinky – wird schneller in deiner Nähe</li>
+    </ul>
+    <p>Nach einem Treffer: 30s Schutz 🛡️</p>
+  </div>
+  <button class="help-close" id="btn-close-help">✕ Schließen</button>
+</div>
+
 <!-- Ghost immunity badge -->
 <div id="immunity-badge">🛡️ Geister-Schutz: <span id="immunity-timer">60</span>s</div>
 
@@ -272,6 +336,8 @@
   const $immunityTimer = document.getElementById("immunity-timer");
   const $playerNameInput = document.getElementById("player-name-input");
   const $gameTimer = document.getElementById("game-timer");
+  const $helpBtn = document.getElementById("help-btn");
+  const $helpOverlay = document.getElementById("help-overlay");
   const $leaderboardScreen = document.getElementById("leaderboard-screen");
   const $leaderboardContent = document.getElementById("leaderboard-content");
   const $winLeaderboard = document.getElementById("win-leaderboard");
@@ -1057,6 +1123,7 @@
     $startScreen.style.display = "none";
     $header.style.display = "flex";
     $centerBtn.style.display = "block";
+    $helpBtn.style.display = "block";
     gameRunning = true;
 
     initMap();
@@ -1090,6 +1157,14 @@
 
   document.getElementById("btn-close-leaderboard").addEventListener("click", () => {
       $leaderboardScreen.style.display = "none";
+  });
+
+  // Help button
+  $helpBtn.addEventListener("click", () => {
+    $helpOverlay.classList.add("visible");
+  });
+  document.getElementById("btn-close-help").addEventListener("click", () => {
+    $helpOverlay.classList.remove("visible");
   });
 
   // Restore player name from session

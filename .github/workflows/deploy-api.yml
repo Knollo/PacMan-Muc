@@ -17,15 +17,23 @@ jobs:
           sed -i "s/%%MYSQL_DB%%/${{ secrets.MySQL_DB }}/g" api/leaderboard.php
           sed -i "s/%%MYSQL_PW%%/${{ secrets.MySQL_PW }}/g" api/leaderboard.php
 
-      - name: Deploy API via SSH
+      - name: Setup SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy API via SCP
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_DEPLOY_PATH: ${{ secrets.SSH_DEPLOY_PATH }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts 2>/dev/null
-          ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST "cd $SSH_DEPLOY_PATH/api && git fetch origin main && git checkout origin/main -- api/ && echo '✅ API deployed successfully'"
+          SCP_OPTS="-i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new"
+          ssh $SCP_OPTS "$SSH_USER@$SSH_HOST" "mkdir -p $SSH_DEPLOY_PATH/api"
+          scp $SCP_OPTS api/leaderboard.php "$SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH/api/"
+          echo "✅ API deployed successfully (with credentials injected)"
