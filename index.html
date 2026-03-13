@@ -969,10 +969,13 @@
 
   // ── Webcam ghost photo effect ────────────────────────────────────
   function showWebcamEffect(dot) {
+    dot.collected = true;
+    gameRunning = false;
     soundGhostLaugh();
     $webcamOverlay.classList.add("visible");
     setTimeout(() => {
       $webcamOverlay.classList.remove("visible");
+      gameRunning = true;
       finalizeCollect(dot);
     }, 3000);
   }
@@ -1154,6 +1157,7 @@
     gameRunning = true;
 
     initMap();
+    placeDots();
     placeGhosts();
     updateHeader();
     startGPS();
