@@ -154,3 +154,4 @@ switch ($action) {
         http_response_code(400);
         echo json_encode(['error' => 'Unknown action. Use: top, submit, toggle']);
 }
+// Deploy trigger: 2026-03-13 22:06
