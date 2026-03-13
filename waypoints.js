@@ -31,6 +31,7 @@ const GAME_CONFIG = {
   // ---------------------------------------------------------------------------
   // Waypoints – from Daten/Map Suedfriedhof komplett.csv (92 Punkte)
   // Types randomly assigned: 45 traditional, 21 multi, 13 virtual, 11 earth, 2 mystery
+  // Drumpldeer: manuelle Anpassungen der Wegpunkte, nur 7 Virtuelle für Lebensrettung
   // ---------------------------------------------------------------------------
   waypoints: [
     { lat: 48.12651, lng: 11.56338, type: "multi", label: "Punkt 1" },
@@ -53,7 +54,7 @@ const GAME_CONFIG = {
     { lat: 48.12551, lng: 11.56422, type: "multi", label: "Punkt 18" },
     { lat: 48.12559, lng: 11.56363, type: "multi", label: "Punkt 19" },
     { lat: 48.12544, lng: 11.56407, type: "traditional", label: "Punkt 20" },
-    { lat: 48.12549, lng: 11.56395, type: "virtual", label: "Punkt 21" },
+    { lat: 48.12549, lng: 11.56395, type: "letterbox", label: "Punkt 21" },
     { lat: 48.12562, lng: 11.56376, type: "virtual", label: "Punkt 22" },
     { lat: 48.12570, lng: 11.56382, type: "traditional", label: "Punkt 23" },
     { lat: 48.12582, lng: 11.56392, type: "traditional", label: "Punkt 24" },
@@ -63,8 +64,8 @@ const GAME_CONFIG = {
     { lat: 48.12563, lng: 11.56351, type: "traditional", label: "Punkt 28" },
     { lat: 48.12630, lng: 11.56373, type: "virtual", label: "Punkt 29" },
     { lat: 48.12564, lng: 11.56264, type: "multi", label: "Punkt 30" },
-    { lat: 48.12577, lng: 11.56273, type: "virtual", label: "Punkt 31" },
-    { lat: 48.12644, lng: 11.56322, type: "virtual", label: "Punkt 32" },
+    { lat: 48.12577, lng: 11.56273, type: "event", label: "Punkt 31" },
+    { lat: 48.12644, lng: 11.56322, type: "multi", label: "Punkt 32" },
     { lat: 48.12630, lng: 11.56313, type: "multi", label: "Punkt 33" },
     { lat: 48.12618, lng: 11.56304, type: "earth", label: "Punkt 34" },
     { lat: 48.12606, lng: 11.56295, type: "traditional", label: "Punkt 35" },
@@ -98,8 +99,8 @@ const GAME_CONFIG = {
     { lat: 48.12585, lng: 11.56504, type: "multi", label: "Punkt 62" },
     { lat: 48.12593, lng: 11.56509, type: "webcam", label: "Punkt 63" },
     { lat: 48.12498, lng: 11.56331, type: "virtual", label: "Punkt 64" },
-    { lat: 48.12510, lng: 11.56339, type: "virtual", label: "Punkt 65" },
-    { lat: 48.12559, lng: 11.56321, type: "virtual", label: "Punkt 66" },
+    { lat: 48.12510, lng: 11.56339, type: "letterbox", label: "Punkt 65" },
+    { lat: 48.12559, lng: 11.56321, type: "event", label: "Punkt 66" },
     { lat: 48.12521, lng: 11.56348, type: "traditional", label: "Punkt 67" },
     { lat: 48.12530, lng: 11.56354, type: "webcam", label: "Punkt 68" },
     { lat: 48.12541, lng: 11.56361, type: "traditional", label: "Punkt 69" },
