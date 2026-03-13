@@ -23,9 +23,13 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          echo "Key file info:"
+          head -1 ~/.ssh/deploy_key
+          wc -l ~/.ssh/deploy_key
+          ssh-keygen -l -f ~/.ssh/deploy_key 2>&1 || echo "⚠️ Key validation failed"
 
       - name: Deploy API via SCP
         env:
@@ -33,7 +37,8 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_DEPLOY_PATH: ${{ secrets.SSH_DEPLOY_PATH }}
         run: |
-          SCP_OPTS="-i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new"
-          ssh $SCP_OPTS "$SSH_USER@$SSH_HOST" "mkdir -p $SSH_DEPLOY_PATH/api"
-          scp $SCP_OPTS api/leaderboard.php "$SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH/api/"
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new \
+            "$SSH_USER@$SSH_HOST" "mkdir -p $SSH_DEPLOY_PATH/api"
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new \
+            api/leaderboard.php "$SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH/api/"
           echo "✅ API deployed successfully (with credentials injected)"
