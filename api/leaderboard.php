@@ -79,7 +79,7 @@ switch ($action) {
              FROM pacman_leaderboard
              WHERE visible = 1
              ORDER BY score DESC, time_seconds ASC
-             LIMIT 20'
+             LIMIT 100'
         );
         echo json_encode(['leaderboard' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         break;
