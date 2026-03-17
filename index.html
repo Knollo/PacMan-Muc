@@ -30,9 +30,14 @@
     /* ── Overlays ──────────────────────────────────────────────────── */
     .overlay {
       position: fixed; inset: 0; z-index: 2000;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
       background: rgba(15,15,35,.92); text-align: center; padding: 24px;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
     }
+    /* vertically center start screen (no overflow risk) */
+    #start-screen { justify-content: center; }
+    /* give scrollable overlays some top breathing room */
+    #win-screen, #game-over-screen, #leaderboard-screen { padding-top: 48px; }
     .overlay h1 { font-size: 2rem; margin-bottom: 12px; }
     .overlay p, .overlay pre { font-size: 1rem; line-height: 1.5; max-width: 420px; margin-bottom: 16px; white-space: pre-wrap; }
     .overlay pre { text-align: left; background: #1a1a2e; padding: 12px; border-radius: 8px; font-family: monospace; font-size: .85rem; }
@@ -212,16 +217,17 @@
 <!-- Start Screen -->
 <div class="overlay" id="start-screen">
   <h1>🎮 PacMan München</h1>
-  <p>Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!</p>
-  <p class="subtitle">GPS-basiertes Outdoor-Spiel · 3 Leben · 100 Caches</p>
-  <input type="text" id="player-name-input" class="name-input" placeholder="Dein Spielername..." maxlength="50" autocomplete="off" />
+  <p data-i18n="startDesc">Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!</p>
+  <p class="subtitle" data-i18n="startSub">GPS-basiertes Outdoor-Spiel · 3 Leben · 100 Caches</p>
+  <input type="text" id="player-name-input" class="name-input" data-i18n-placeholder="namePlaceholder" placeholder="Dein Spielername..." maxlength="50" autocomplete="off" />
   <button id="btn-start" style="margin-top: 12px;">▶ START</button>
   <p style="margin-top: 14px;">
-    <a href="tutorial.html" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;">📖 Tutorial – So funktioniert's</a>
+    <a href="tutorial.html" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;" data-i18n="tutorialLink">📖 Tutorial – So funktioniert's</a>
     <span style="margin: 0 8px; color: #444;">|</span>
-    <a href="#" id="btn-show-leaderboard" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;">🏆 Bestenliste</a>
+    <a href="#" id="btn-show-leaderboard" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;" data-i18n="leaderboardLink">🏆 Bestenliste</a>
   </p>
-  <p style="margin-top: 18px; color: #00cc44; font-size: 0.85rem;">Die Belohnung für PacMan kannst du dir am Ende hier abholen: <a href="https://coord.info/GCBKNAT" target="_blank" rel="noopener noreferrer" style="color: #00cc44;">GCBKNAT</a></p>
+  <p style="margin-top: 18px; color: #00cc44; font-size: 0.85rem;" data-i18n="rewardText">Die Belohnung für PacMan kannst du dir am Ende hier abholen: <a href="https://coord.info/GCBKNAT" target="_blank" rel="noopener noreferrer" style="color: #00cc44;">GCBKNAT</a></p>
+  <button id="btn-lang" style="margin-top: 10px; padding: 8px 20px; font-size: .85rem; background: transparent; color: #e2b714; border: 1px solid #e2b714; border-radius: 20px; cursor: pointer;">🌐 English</button>
 </div>
 
 <!-- Win Screen -->
@@ -233,26 +239,27 @@
   <div class="visibility-toggle" id="visibility-toggle">
     <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:.9rem; color:#aaa; margin: 12px 0;">
       <input type="checkbox" id="leaderboard-visible" checked />
-      Ergebnis in der Bestenliste anzeigen
+      <span data-i18n="visibilityLabel">Ergebnis in der Bestenliste anzeigen</span>
     </label>
   </div>
-  <button id="btn-restart-win">🔄 Nochmal spielen</button>
+  <button id="btn-restart-win" data-i18n="restartBtn">🔄 Nochmal spielen</button>
 </div>
 
 <!-- Game Over Screen -->
 <div class="overlay" id="game-over-screen" style="display:none">
-  <h1>💀 Game Over</h1>
-  <p>Die Geister haben dich erwischt!</p>
+  <h1 data-i18n="gameOverTitle">💀 Game Over</h1>
+  <p data-i18n="gameOverDesc">Die Geister haben dich erwischt!</p>
   <p id="go-score"></p>
   <p id="go-time" style="color:#aaa; font-size:.9rem;"></p>
-  <button id="btn-restart-go">🔄 Nochmal spielen</button>
+  <button id="btn-restart-go" data-i18n="restartBtn">🔄 Nochmal spielen</button>
 </div>
 
 <!-- Leaderboard Screen -->
 <div class="overlay" id="leaderboard-screen" style="display:none">
-  <h1>🏆 Bestenliste</h1>
+  <h1 data-i18n="leaderboardTitle">🏆 Bestenliste</h1>
   <div id="leaderboard-content"></div>
-  <button id="btn-close-leaderboard" style="margin-top: 16px;">← Zurück</button>
+  <button id="btn-close-leaderboard" style="margin-top: 16px; flex-shrink: 0;" data-i18n="backBtn">← Zurück</button>
+  <div style="height: 24px; flex-shrink: 0;"></div>
 </div>
 
 <!-- GPS accuracy -->
@@ -266,7 +273,7 @@
 
 <!-- Help overlay -->
 <div id="help-overlay">
-  <div class="help-content">
+  <div class="help-content" id="help-content-inner" data-i18n-html="helpContent">
     <h2>🎯 Spielidee</h2>
     <p>Sammle alle 100 Caches im Alten Südlichen Friedhof – aber pass auf die Geister auf!</p>
 
@@ -298,33 +305,33 @@
     </ul>
     <p>Treffer: −50 Punkte + Leben verloren · 30s Schutz 🛡️</p>
   </div>
-  <button class="help-close" id="btn-close-help">✕ Schließen</button>
+  <button class="help-close" id="btn-close-help" data-i18n="closeBtn">✕ Schließen</button>
 </div>
 
 <!-- Ghost immunity badge -->
-<div id="immunity-badge">🛡️ Geister-Schutz: <span id="immunity-timer">60</span>s</div>
+<div id="immunity-badge" data-i18n-template="immunityBadge">🛡️ Geister-Schutz: <span id="immunity-timer">60</span>s</div>
 
 <!-- Mystery quiz overlay -->
 <div id="mystery-overlay">
-  <h2>🔮 Mystery-Rätsel!</h2>
+  <h2 data-i18n="mysteryTitle">🔮 Mystery-Rätsel!</h2>
   <p id="mystery-question"></p>
-  <input type="text" id="mystery-input" placeholder="Deine Antwort..." autocomplete="off" />
+  <input type="text" id="mystery-input" data-i18n-placeholder="mysteryPlaceholder" placeholder="Deine Antwort..." autocomplete="off" />
   <div id="mystery-result"></div>
   <div class="quiz-buttons">
-    <button class="btn-answer" id="btn-mystery-answer">✅ Antworten</button>
-    <button class="btn-skip" id="btn-mystery-skip">⏭️ Überspringen</button>
+    <button class="btn-answer" id="btn-mystery-answer" data-i18n="mysteryAnswer">✅ Antworten</button>
+    <button class="btn-skip" id="btn-mystery-skip" data-i18n="mysterySkip">⏭️ Überspringen</button>
   </div>
 </div>
 
 <!-- Auto-center toggle -->
-<button id="center-toggle" style="display:none">📍 Zentrieren</button>
+<button id="center-toggle" style="display:none" data-i18n="centerBtn">📍 Zentrieren</button>
 
 <!-- Webcam ghost overlay -->
 <div id="webcam-overlay">
   <div class="ghost-photo">
     <span class="ghost-emoji">👻</span>
   </div>
-  <div class="ghost-label">📸 Webcam-Cache gefunden!<br>Der Geist sagt: Cheeeese! 😂</div>
+  <div class="ghost-label" data-i18n="webcamLabel">📸 Webcam-Cache gefunden!<br>Der Geist sagt: Cheeeese! 😂</div>
 </div>
 
 <!-- Ghost-hit flash -->
@@ -369,6 +376,135 @@
   const $leaderboardContent = document.getElementById("leaderboard-content");
   const $winLeaderboard = document.getElementById("win-leaderboard");
   const $leaderboardVisible = document.getElementById("leaderboard-visible");
+
+  // ── i18n translation system ──────────────────────────────────────
+  let currentLang = "de";
+  const i18n = {
+    de: {
+      startDesc: 'Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!',
+      startSub: 'GPS-basiertes Outdoor-Spiel · 3 Leben · 100 Caches',
+      namePlaceholder: 'Dein Spielername...',
+      nameEmpty: 'Bitte Namen eingeben!',
+      tutorialLink: '📖 Tutorial – So funktioniert\'s',
+      leaderboardLink: '🏆 Bestenliste',
+      rewardText: 'Die Belohnung für PacMan kannst du dir am Ende hier abholen: <a href="https://coord.info/GCBKNAT" target="_blank" rel="noopener noreferrer" style="color: #00cc44;">GCBKNAT</a>',
+      langBtn: '🌐 English',
+      visibilityLabel: 'Ergebnis in der Bestenliste anzeigen',
+      restartBtn: '🔄 Nochmal spielen',
+      gameOverTitle: '💀 Game Over',
+      gameOverDesc: 'Die Geister haben dich erwischt!',
+      leaderboardTitle: '🏆 Bestenliste',
+      backBtn: '← Zurück',
+      closeBtn: '✕ Schließen',
+      centerBtn: '📍 Zentrieren',
+      mysteryTitle: '🔮 Mystery-Rätsel!',
+      mysteryPlaceholder: 'Deine Antwort...',
+      mysteryAnswer: '✅ Antworten',
+      mysterySkip: '⏭️ Überspringen',
+      mysteryCorrect: '✅ Richtig! Geister-Schutz für 60 Sekunden!',
+      mysteryWrong: '❌ Falsch! Versuch es nochmal...',
+      webcamLabel: '📸 Webcam-Cache gefunden!<br>Der Geist sagt: Cheeeese! 😂',
+      immunityBadge: '🛡️ Geister-Schutz: <span id="immunity-timer">{0}</span>s',
+      winStats: 'Punkte: {score} · Zeit: {time} · Leben: {lives}/3',
+      winSubmitting: 'Ergebnis wird übermittelt…',
+      winSuccess: 'Glückwunsch! Dein Ergebnis wurde gespeichert.',
+      goScore: 'Dein Punktestand: {score}',
+      goTime: 'Zeit: {time}',
+      noEntries: 'Noch keine Einträge',
+      thPlayer: 'Spieler',
+      thScore: 'Punkte',
+      thTime: 'Zeit',
+      gpsNA: 'GPS nicht verfügbar. Bitte aktiviere die Standortfreigabe.',
+      gpsError: 'GPS-Fehler: {0}\nBitte aktiviere die Standortfreigabe.',
+      helpContent: '<h2>🎯 Spielidee</h2><p>Sammle alle 100 Caches im Alten Südlichen Friedhof – aber pass auf die Geister auf!</p><h2>🚶 Steuerung</h2><ul><li>Dein GPS bewegt den PacMan automatisch</li><li>Laufe nahe an Caches heran (~10m) zum Einsammeln</li><li>Halte 5m Abstand zu Geistern!</li></ul><h2>📦 Cache-Typen</h2><ul><li>🟢 Traditional: 5 Pkt</li><li>🔵 Multi: 10 Pkt</li><li>📬 Letterbox: 15 Pkt</li><li>🔮 Mystery: 20 Pkt + 60s Schutz</li><li>🟡 Virtual: 25 Pkt + ❤️ Leben</li><li>🟤 Earth: 25 Pkt</li><li>📷 Webcam: 25 Pkt</li><li>🎪 Event: 30 Pkt</li></ul><h2>👻 Geister</h2><ul><li>🔴 Blinky – verfolgt dich direkt</li><li>🩷 Pinky – schneidet dir den Weg ab</li><li>🩵 Inky – unberechenbar</li><li>🟠 Stinky – wird schneller in deiner Nähe</li></ul><p>Treffer: −50 Punkte + Leben verloren · 30s Schutz 🛡️</p>'
+    },
+    en: {
+      startDesc: 'Walk through the <strong>Old Southern Cemetery</strong> in Munich and collect all virtual caches – but watch out for the ghosts!',
+      startSub: 'GPS-based outdoor game · 3 lives · 100 caches',
+      namePlaceholder: 'Your player name...',
+      nameEmpty: 'Please enter a name!',
+      tutorialLink: '📖 Tutorial – How to play',
+      leaderboardLink: '🏆 Leaderboard',
+      rewardText: 'Claim your PacMan reward at the end here: <a href="https://coord.info/GCBKNAT" target="_blank" rel="noopener noreferrer" style="color: #00cc44;">GCBKNAT</a>',
+      langBtn: '🌐 Deutsch',
+      visibilityLabel: 'Show result on leaderboard',
+      restartBtn: '🔄 Play again',
+      gameOverTitle: '💀 Game Over',
+      gameOverDesc: 'The ghosts got you!',
+      leaderboardTitle: '🏆 Leaderboard',
+      backBtn: '← Back',
+      closeBtn: '✕ Close',
+      centerBtn: '📍 Center',
+      mysteryTitle: '🔮 Mystery Puzzle!',
+      mysteryPlaceholder: 'Your answer...',
+      mysteryAnswer: '✅ Submit',
+      mysterySkip: '⏭️ Skip',
+      mysteryCorrect: '✅ Correct! Ghost protection for 60 seconds!',
+      mysteryWrong: '❌ Wrong! Try again...',
+      webcamLabel: '📸 Webcam cache found!<br>The ghost says: Cheeeese! 😂',
+      immunityBadge: '🛡️ Ghost Shield: <span id="immunity-timer">{0}</span>s',
+      winStats: 'Score: {score} · Time: {time} · Lives: {lives}/3',
+      winSubmitting: 'Submitting result…',
+      winSuccess: 'Congratulations! Your result has been saved.',
+      goScore: 'Your score: {score}',
+      goTime: 'Time: {time}',
+      noEntries: 'No entries yet',
+      thPlayer: 'Player',
+      thScore: 'Score',
+      thTime: 'Time',
+      gpsNA: 'GPS not available. Please enable location services.',
+      gpsError: 'GPS error: {0}\nPlease enable location services.',
+      helpContent: '<h2>🎯 How to Play</h2><p>Collect all 100 caches in the Old Southern Cemetery – but watch out for the ghosts!</p><h2>🚶 Controls</h2><ul><li>Your GPS moves PacMan automatically</li><li>Walk close to caches (~10m) to collect them</li><li>Keep 5m distance from ghosts!</li></ul><h2>📦 Cache Types</h2><ul><li>🟢 Traditional: 5 pts</li><li>🔵 Multi: 10 pts</li><li>📬 Letterbox: 15 pts</li><li>🔮 Mystery: 20 pts + 60s shield</li><li>🟡 Virtual: 25 pts + ❤️ life</li><li>🟤 Earth: 25 pts</li><li>📷 Webcam: 25 pts</li><li>🎪 Event: 30 pts</li></ul><h2>👻 Ghosts</h2><ul><li>🔴 Blinky – chases you directly</li><li>🩷 Pinky – tries to cut you off</li><li>🩵 Inky – unpredictable</li><li>🟠 Stinky – speeds up near you</li></ul><p>Hit: −50 points + life lost · 30s shield 🛡️</p>'
+    }
+  };
+
+  function t(key, params) {
+    let str = (i18n[currentLang] && i18n[currentLang][key]) || (i18n.de[key]) || key;
+    if (params) {
+      Object.keys(params).forEach(k => { str = str.replace('{' + k + '}', params[k]); });
+    }
+    return str;
+  }
+
+  function applyLanguage() {
+    // Update data-i18n elements (textContent)
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      if (i18n[currentLang][key] !== undefined) el.textContent = i18n[currentLang][key];
+    });
+    // Update data-i18n elements that use innerHTML (contains HTML tags)
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      const val = i18n[currentLang][key];
+      if (val && (val.includes('<') || val.includes('&'))) el.innerHTML = val;
+    });
+    // Update data-i18n-html elements (always innerHTML)
+    document.querySelectorAll("[data-i18n-html]").forEach(el => {
+      const key = el.getAttribute("data-i18n-html");
+      if (i18n[currentLang][key] !== undefined) el.innerHTML = i18n[currentLang][key];
+    });
+    // Update placeholders
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+      const key = el.getAttribute("data-i18n-placeholder");
+      if (i18n[currentLang][key] !== undefined) el.placeholder = i18n[currentLang][key];
+    });
+    // Update lang button
+    const $langBtn = document.getElementById("btn-lang");
+    if ($langBtn) $langBtn.textContent = t("langBtn");
+  }
+
+  document.getElementById("btn-lang").addEventListener("click", () => {
+    currentLang = currentLang === "de" ? "en" : "de";
+    localStorage.setItem("pacman_lang", currentLang);
+    applyLanguage();
+  });
+
+  // Restore language preference
+  const savedLang = localStorage.getItem("pacman_lang");
+  if (savedLang && i18n[savedLang]) {
+    currentLang = savedLang;
+    applyLanguage();
+  }
 
   // ── State ─────────────────────────────────────────────────────────
   let map, playerMarker, accuracyCircle;
@@ -471,10 +607,10 @@
 
   function renderLeaderboard(entries, container, highlightId) {
       if (!entries || entries.length === 0) {
-          container.innerHTML = '<p style="color:#666; font-size:.9rem;">Noch keine Einträge</p>';
+          container.innerHTML = `<p style="color:#666; font-size:.9rem;">${t('noEntries')}</p>`;
           return;
       }
-      let html = '<table class="leaderboard-table"><thead><tr><th>#</th><th>Spieler</th><th>Punkte</th><th>Zeit</th></tr></thead><tbody>';
+      let html = `<table class="leaderboard-table"><thead><tr><th>#</th><th>${t('thPlayer')}</th><th>${t('thScore')}</th><th>${t('thTime')}</th></tr></thead><tbody>`;
       entries.forEach((e, i) => {
           const isMe = highlightId && parseInt(e.id) === parseInt(highlightId);
           const cls = isMe ? ' class="highlight"' : '';
@@ -940,7 +1076,7 @@
     const correct = String(pendingMysteryDot.data.answer).trim().toLowerCase();
 
     if (userAnswer === correct) {
-      $mysteryResult.textContent = "✅ Richtig! Geister-Schutz für 60 Sekunden!";
+      $mysteryResult.textContent = t('mysteryCorrect');
       $mysteryResult.style.color = "#0f0";
       activateImmunity(60);
       setTimeout(() => {
@@ -950,7 +1086,7 @@
         pendingMysteryDot = null;
       }, 1200);
     } else {
-      $mysteryResult.textContent = "❌ Falsch! Versuch es nochmal...";
+      $mysteryResult.textContent = t('mysteryWrong');
       $mysteryResult.style.color = "#f44";
       $mysteryInput.value = "";
       $mysteryInput.focus();
@@ -982,11 +1118,13 @@
 
   function activateImmunity(seconds) {
     immuneUntil = Date.now() + seconds * 1000;
+    $immunityBadge.innerHTML = t('immunityBadge', { '0': seconds });
     $immunityBadge.style.display = "block";
     if (immunityTimerInterval) clearInterval(immunityTimerInterval);
     immunityTimerInterval = setInterval(() => {
       const remaining = Math.max(0, Math.ceil((immuneUntil - Date.now()) / 1000));
-      $immunityTimer.textContent = remaining;
+      const timer = document.getElementById("immunity-timer");
+      if (timer) timer.textContent = remaining;
       if (remaining <= 0) {
         clearInterval(immunityTimerInterval);
         immunityTimerInterval = null;
@@ -1018,8 +1156,8 @@
     soundWin();
     const timeSeconds = getElapsedSeconds();
     $winTitle.textContent = GAME_CONFIG.winTitle;
-    $winMessage.textContent = "Ergebnis wird übermittelt…";
-    $winStats.textContent = `Punkte: ${score} · Zeit: ${formatTime(timeSeconds)} · Leben: ${lives}/3`;
+    $winMessage.textContent = t('winSubmitting');
+    $winStats.textContent = t('winStats', { score, time: formatTime(timeSeconds), lives });
     $winScreen.style.display = "flex";
 
     // Submit score (visible by default)
@@ -1028,7 +1166,7 @@
     if (winMessage) {
       $winMessage.textContent = winMessage;
     } else {
-      $winMessage.textContent = "Glückwunsch! Dein Ergebnis wurde gespeichert.";
+      $winMessage.textContent = t('winSuccess');
     }
     renderLeaderboard(entries, $winLeaderboard, lastEntryId);
 
@@ -1045,8 +1183,8 @@
     stopTimer();
     soundGameOver();
     const timeSeconds = getElapsedSeconds();
-    $goScore.textContent = `Dein Punktestand: ${score}`;
-    $goTime.textContent = `Zeit: ${formatTime(timeSeconds)}`;
+    $goScore.textContent = t('goScore', { score });
+    $goTime.textContent = t('goTime', { time: formatTime(timeSeconds) });
     $goScreen.style.display = "flex";
   }
 
@@ -1079,7 +1217,7 @@
   // ── GPS setup ─────────────────────────────────────────────────────
   function startGPS() {
     if (!navigator.geolocation) {
-      alert("GPS nicht verfügbar. Bitte aktiviere die Standortfreigabe.");
+      alert(t('gpsNA'));
       return;
     }
 
@@ -1089,7 +1227,7 @@
       },
       (err) => {
         console.warn("GPS error:", err.message);
-        alert("GPS-Fehler: " + err.message + "\nBitte aktiviere die Standortfreigabe.");
+        alert(t('gpsError', { '0': err.message }));
       },
       { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
     );
@@ -1137,7 +1275,7 @@
     if (!name) {
         $playerNameInput.style.borderColor = "#f44";
         $playerNameInput.focus();
-        $playerNameInput.placeholder = "Bitte Namen eingeben!";
+        $playerNameInput.placeholder = t('nameEmpty');
         return;
     }
     playerName = name;

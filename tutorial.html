@@ -119,13 +119,14 @@
 
 <header>
   <h1>🎮 PacMan München</h1>
-  <p>So funktioniert das Spiel</p>
+  <p data-i18n="headerSub">So funktioniert das Spiel</p>
+  <button id="btn-lang" style="margin-top: 8px; padding: 6px 16px; font-size: .8rem; background: transparent; color: #e2b714; border: 1px solid #e2b714; border-radius: 16px; cursor: pointer;">🌐 English</button>
 </header>
 
 <div class="content">
 
   <!-- 1. Spielidee -->
-  <div class="section">
+  <div class="section" data-i18n-html="sec1">
     <h2><span class="icon">🎯</span> Spielidee</h2>
     <p>
       <strong style="color:#fff">PacMan München</strong> ist ein GPS-basiertes Outdoor-Spiel.
@@ -136,7 +137,7 @@
   </div>
 
   <!-- 2. So geht's -->
-  <div class="section">
+  <div class="section" data-i18n-html="sec2">
     <h2><span class="icon">🚶</span> So geht's</h2>
     <div class="step">
       <div class="step-num">1</div>
@@ -157,7 +158,7 @@
   </div>
 
   <!-- 3. Cache-Typen -->
-  <div class="section">
+  <div class="section" data-i18n-html="sec3">
     <h2><span class="icon">📦</span> Cache-Typen & Punkte</h2>
     <p>Verschiedene Cache-Typen geben unterschiedlich viele Punkte:</p>
     <table class="cache-table">
@@ -205,7 +206,7 @@
   </div>
 
   <!-- 4. Mystery-Rätsel -->
-  <div class="section">
+  <div class="section" data-i18n-html="sec4">
     <h2><span class="icon">🔮</span> Mystery-Rätsel</h2>
     <p>
       Bei <strong style="color:#fff">Mystery-Caches</strong> erscheint ein Rätsel-Popup mit einer Frage.
@@ -221,7 +222,7 @@
   </div>
 
   <!-- 5. Geister -->
-  <div class="section">
+  <div class="section" data-i18n-html="sec5">
     <h2><span class="icon">👻</span> Die Geister</h2>
     <p>
       Vier Geister patrouillieren durch den Friedhof. Kommst du einem Geist zu nahe
@@ -237,7 +238,7 @@
   </div>
 
   <!-- 6. Bedienung -->
-  <div class="section">
+  <div class="section" data-i18n-html="sec6">
     <h2><span class="icon">📱</span> Bedienung</h2>
     <ul>
       <li><span class="li-icon">📍</span> <strong style="color:#fff">Zentrieren-Button</strong> – Karte auf deinen Standort zentrieren (ein/aus)</li>
@@ -248,7 +249,7 @@
   </div>
 
   <!-- 7. Tipps -->
-  <div class="section">
+  <div class="section" data-i18n-html="sec7">
     <h2><span class="icon">💡</span> Tipps & Tricks</h2>
     <ul>
       <li><span class="li-icon">🗺️</span> Plane deine Route – versuche alle Punkte in einem Durchgang zu sammeln</li>
@@ -262,8 +263,47 @@
 
 <!-- Fixed start button -->
 <div class="start-area">
-  <a href="index.html">▶ SPIEL STARTEN</a>
+  <a href="index.html" data-i18n="startBtn">▶ SPIEL STARTEN</a>
 </div>
 
-</body>
-</html>
+<script>
+(function() {
+  let lang = localStorage.getItem("pacman_lang") || "de";
+  const i18n = {
+    en: {
+      headerSub: "How the game works",
+      langBtn: "🌐 Deutsch",
+      sec1: '<h2><span class="icon">🎯</span> Game Concept</h2><p><strong style="color:#fff">PacMan Munich</strong> is a GPS-based outdoor game. You walk as PacMan through the <strong style="color:#fff">Old Southern Cemetery</strong> in Munich and collect virtual geocache points – just like the classic, but in the real world!</p><div class="tip">💡 You need a smartphone with GPS and an internet connection.</div>',
+      sec2: '<h2><span class="icon">🚶</span> How to Play</h2><div class="step"><div class="step-num">1</div><div class="step-text">Open the game on your <strong>smartphone</strong> and press <strong>START</strong>.</div></div><div class="step"><div class="step-num">2</div><div class="step-text"><strong>Start walking!</strong> Your location is shown on the map via GPS – you are the yellow PacMan.</div></div><div class="step"><div class="step-num">3</div><div class="step-text">Approach the <strong>cache icons</strong> on the map. When you are close enough (<strong>10 meters</strong>), they are automatically collected.</div></div><div class="step"><div class="step-num">4</div><div class="step-text">Collect <strong>all 100 caches</strong> to win!</div></div>',
+      sec3: '<h2><span class="icon">📦</span> Cache Types & Points</h2><p>Different cache types award different points:</p><table class="cache-table"><tr><td><img class="cache-icon" src="Images/type_traditional.svg" alt="Traditional"></td><td class="cache-name">Traditional</td><td class="cache-pts">5 pts</td></tr><tr><td><img class="cache-icon" src="Images/type_multi.svg" alt="Multi"></td><td class="cache-name">Multi</td><td class="cache-pts">10 pts</td></tr><tr><td><img class="cache-icon" src="Images/type_letterbox.svg" alt="Letterbox"></td><td class="cache-name">Letterbox</td><td class="cache-pts">15 pts</td></tr><tr><td><img class="cache-icon" src="Images/type_mystery.svg" alt="Mystery"></td><td class="cache-name">Mystery</td><td class="cache-pts">20 pts</td></tr><tr><td><img class="cache-icon" src="Images/type_virtual.svg" alt="Virtual"></td><td class="cache-name">Virtual <span style="color:#0f0; font-weight:400; font-size:.8rem">+❤️</span></td><td class="cache-pts">25 pts</td></tr><tr><td><img class="cache-icon" src="Images/type_earth.svg" alt="Earth"></td><td class="cache-name">Earthcache</td><td class="cache-pts">25 pts</td></tr><tr><td><img class="cache-icon" src="Images/type_webcam.svg" alt="Webcam"></td><td class="cache-name">Webcam <span style="color:#e2b714; font-weight:400; font-size:.8rem">📸👻</span></td><td class="cache-pts">25 pts</td></tr><tr><td><img class="cache-icon" src="Images/type_event.svg" alt="Event"></td><td class="cache-name">Event</td><td class="cache-pts">30 pts</td></tr></table>',
+      sec4: '<h2><span class="icon">🔮</span> Mystery Puzzles</h2><p>At <strong style="color:#fff">Mystery caches</strong> a quiz popup with a question appears.</p><ul><li><span class="li-icon">✅</span> Correct answer = <strong style="color:#0f0">60 seconds ghost shield!</strong></li><li><span class="li-icon">❌</span> Wrong answer = Try again</li><li><span class="li-icon">⏭️</span> Skip possible (without shield bonus)</li><li><span class="li-icon">💚</span> <strong style="color:#fff">Virtual caches</strong> restore one life (max 3)</li></ul><div class="tip">💡 Mystery caches give you a shield – it\'s worth solving the puzzle!</div><div class="tip">📸 At <strong>Webcam caches</strong> a laughing ghost appears – Surprise!</div>',
+      sec5: '<h2><span class="icon">👻</span> The Ghosts</h2><p>Four ghosts patrol the cemetery. If a ghost gets within <strong style="color:#fff">5 meters</strong>, you lose a life!</p><ul><li><span class="li-icon" style="color:#FF0000">👻</span> <strong style="color:#FF0000">Blinky</strong> – chases you directly</li><li><span class="li-icon" style="color:#FFB8FF">👻</span> <strong style="color:#FFB8FF">Pinky</strong> – tries to cut you off</li><li><span class="li-icon" style="color:#00FFFF">👻</span> <strong style="color:#00FFFF">Inky</strong> – unpredictable</li><li><span class="li-icon" style="color:#FF8C00">👻</span> <strong style="color:#FF8C00">Stinky</strong> – patrols randomly, but speeds up near you</li></ul><div class="warning">⚠️ You only have <strong>3 lives</strong>. Ghost hits cost <strong>50 points</strong> and a life! After a hit you are protected for 30 seconds.</div>',
+      sec6: '<h2><span class="icon">📱</span> Controls</h2><ul><li><span class="li-icon">📍</span> <strong style="color:#fff">Center button</strong> – center map on your location (on/off)</li><li><span class="li-icon">🛡️</span> <strong style="color:#fff">Shield badge</strong> – shows remaining immunity after ghost hit or mystery bonus</li><li><span class="li-icon">🟡</span> <strong style="color:#fff">Score top left</strong> – your current score</li><li><span class="li-icon">❤️</span> <strong style="color:#fff">Hearts top</strong> – remaining lives</li></ul>',
+      sec7: '<h2><span class="icon">💡</span> Tips & Tricks</h2><ul><li><span class="li-icon">🗺️</span> Plan your route – try to collect all caches in one run</li><li><span class="li-icon">👀</span> Keep an eye on the ghosts and dodge them</li><li><span class="li-icon">🔮</span> Solve mystery puzzles for 60s ghost shield – great for dangerous areas</li><li><span class="li-icon">📶</span> Make sure GPS is enabled and you have good reception</li></ul>',
+      startBtn: "▶ START GAME"
+    }
+  };
+
+  function apply() {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const k = el.getAttribute("data-i18n");
+      if (lang === "en" && i18n.en[k]) el.textContent = i18n.en[k];
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(el => {
+      const k = el.getAttribute("data-i18n-html");
+      if (lang === "en" && i18n.en[k]) el.innerHTML = i18n.en[k];
+    });
+    const btn = document.getElementById("btn-lang");
+    btn.textContent = lang === "en" ? "🌐 Deutsch" : "🌐 English";
+  }
+
+  if (lang === "en") apply();
+
+  document.getElementById("btn-lang").addEventListener("click", () => {
+    lang = lang === "de" ? "en" : "de";
+    localStorage.setItem("pacman_lang", lang);
+    if (lang === "en") { apply(); }
+    else { location.reload(); }
+  });
+})();
+</script>
