@@ -264,6 +264,11 @@
 <div class="overlay" id="leaderboard-screen" style="display:none">
   <h1 data-i18n="leaderboardTitle">🏆 Bestenliste</h1>
   <div id="leaderboard-content"></div>
+  <div id="leaderboard-pager" style="display:none; margin-top: 12px; align-items: center; gap: 16px;">
+    <button id="btn-lb-prev" style="padding: 8px 16px; font-size: 1.1rem; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; background: #e2b714; color: #0f0f23;">◀</button>
+    <span id="lb-page-info" style="color: #aaa; font-size: .9rem;">1/1</span>
+    <button id="btn-lb-next" style="padding: 8px 16px; font-size: 1.1rem; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; background: #e2b714; color: #0f0f23;">▶</button>
+  </div>
   <button id="btn-close-leaderboard" style="margin-top: 16px; flex-shrink: 0;" data-i18n="backBtn">← Zurück</button>
   <div style="height: 24px; flex-shrink: 0;"></div>
 </div>
@@ -613,19 +618,66 @@
       }
   }
 
+  const LB_PAGE_SIZE = 10;
+  let lbAllEntries = [];
+  let lbPage = 0;
+  let lbHighlightId = null;
+  let lbContainer = null;
+
   function renderLeaderboard(entries, container, highlightId) {
+      lbAllEntries = entries || [];
+      lbHighlightId = highlightId;
+      lbContainer = container;
+      lbPage = 0;
+
+      // If highlightId is set, jump to the page containing it
+      if (highlightId && lbAllEntries.length > 0) {
+        const idx = lbAllEntries.findIndex(e => parseInt(e.id) === parseInt(highlightId));
+        if (idx >= 0) lbPage = Math.floor(idx / LB_PAGE_SIZE);
+      }
+
+      renderLeaderboardPage();
+  }
+
+  function renderLeaderboardPage() {
+      const entries = lbAllEntries;
+      const container = lbContainer;
+      const highlightId = lbHighlightId;
+      const $pager = document.getElementById("leaderboard-pager");
+
       if (!entries || entries.length === 0) {
           container.innerHTML = `<p style="color:#666; font-size:.9rem;">${t('noEntries')}</p>`;
+          if ($pager) $pager.style.display = "none";
           return;
       }
+
+      const totalPages = Math.ceil(entries.length / LB_PAGE_SIZE);
+      const start = lbPage * LB_PAGE_SIZE;
+      const pageEntries = entries.slice(start, start + LB_PAGE_SIZE);
+
       let html = `<table class="leaderboard-table"><thead><tr><th>#</th><th>${t('thPlayer')}</th><th>${t('thScore')}</th><th>${t('thTime')}</th></tr></thead><tbody>`;
-      entries.forEach((e, i) => {
+      pageEntries.forEach((e, i) => {
+          const rank = start + i + 1;
           const isMe = highlightId && parseInt(e.id) === parseInt(highlightId);
           const cls = isMe ? ' class="highlight"' : '';
-          html += `<tr${cls}><td>${i + 1}</td><td>${escapeHtml(e.player_name)}</td><td>${e.score}</td><td>${formatTime(parseInt(e.time_seconds))}</td></tr>`;
+          html += `<tr${cls}><td>${rank}</td><td>${escapeHtml(e.player_name)}</td><td>${e.score}</td><td>${formatTime(parseInt(e.time_seconds))}</td></tr>`;
       });
       html += '</tbody></table>';
       container.innerHTML = html;
+
+      // Pager controls (only for standalone leaderboard screen)
+      if ($pager && container === $leaderboardContent) {
+        if (totalPages > 1) {
+          $pager.style.display = "flex";
+          document.getElementById("lb-page-info").textContent = `${lbPage + 1} / ${totalPages}`;
+          document.getElementById("btn-lb-prev").disabled = lbPage <= 0;
+          document.getElementById("btn-lb-next").disabled = lbPage >= totalPages - 1;
+          document.getElementById("btn-lb-prev").style.opacity = lbPage <= 0 ? "0.4" : "1";
+          document.getElementById("btn-lb-next").style.opacity = lbPage >= totalPages - 1 ? "0.4" : "1";
+        } else {
+          $pager.style.display = "none";
+        }
+      }
   }
 
   function escapeHtml(str) {
@@ -1349,6 +1401,15 @@
 
   document.getElementById("btn-close-leaderboard").addEventListener("click", () => {
       $leaderboardScreen.style.display = "none";
+  });
+
+  // Leaderboard pagination
+  document.getElementById("btn-lb-prev").addEventListener("click", () => {
+    if (lbPage > 0) { lbPage--; renderLeaderboardPage(); }
+  });
+  document.getElementById("btn-lb-next").addEventListener("click", () => {
+    const totalPages = Math.ceil(lbAllEntries.length / LB_PAGE_SIZE);
+    if (lbPage < totalPages - 1) { lbPage++; renderLeaderboardPage(); }
   });
 
   // Help button
