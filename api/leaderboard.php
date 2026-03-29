@@ -50,10 +50,10 @@ $DB_USER = '%%MYSQL_DB%%'; // Injected by GitHub Actions (same as DB_NAME)
 $DB_PASS = '%%MYSQL_PW%%'; // Injected by GitHub Actions
 
 // Win message – only delivered server-side after game completion
-$WIN_MESSAGE = "Du hast alle Punkte gesammelt! Hier ist dein Geocache-Hinweis:\n\n"
-    . "Der Cache befindet sich am Ende des Weges bei der großen Eiche.\n"
-    . "Koordinaten: N 48° 07.530 E 011° 33.820\n\n"
-    . "Viel Erfolg beim Suchen!";
+$WIN_MESSAGE = "Du hast alle Punkte gesammelt! Hier ist der Hinweis zum Bonus-Cache für den absolvierten Power-Trail:\n\n"
+    . "Der Cache befindet etwas abseits der Geisterzone hinter einem passsenden gelben Objekt.\n"
+    . "Koordinaten: N 48° 07.685 E 11° 33.687\n\n"
+    . "Viel Erfolg beim Suchen und Entspannen nach der Geisterjagd!";
 $TOTAL_DOTS = 99;
 
 try {
