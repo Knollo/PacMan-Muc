@@ -152,6 +152,20 @@
     }
     #flash.show { opacity: 1; }
 
+    /* ── Boundary violation overlay (persistent while out of corridor) */
+    #boundary-overlay {
+      position: fixed; inset: 0; z-index: 1750;
+      background: rgba(180,0,0,.55);
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none; opacity: 0; transition: opacity .3s;
+    }
+    #boundary-overlay.active { opacity: 1; }
+    #boundary-overlay .skull { font-size: 120px; animation: skull-pulse 1s ease-in-out infinite; }
+    @keyframes skull-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50%      { transform: scale(1.15); opacity: 1; }
+    }
+
     /* ── Marker animations ─────────────────────────────────────────── */
     @keyframes pulse-glow {
       0%, 100% { filter: drop-shadow(0 0 4px rgba(226,183,20,.4)); }
@@ -341,6 +355,8 @@
 
 <!-- Ghost-hit flash -->
 <div id="flash"></div>
+<!-- Boundary violation overlay (persistent red + skull) -->
+<div id="boundary-overlay"><span class="skull">☠️</span></div>
 
 <!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -366,6 +382,7 @@
   const $gpsAcc       = document.getElementById("gps-accuracy");
   const $centerBtn    = document.getElementById("center-toggle");
   const $flash        = document.getElementById("flash");
+  const $boundaryOverlay = document.getElementById("boundary-overlay");
   const $mysteryOverlay = document.getElementById("mystery-overlay");
   const $mysteryQuestion = document.getElementById("mystery-question");
   const $mysteryInput = document.getElementById("mystery-input");
@@ -523,7 +540,8 @@
   let autoCenter = true;
   let immuneUntil = 0;
   let gameRunning = false;
-  let boundaryViolationUntil = 0;   // cooldown timestamp for boundary hits
+  let boundaryViolationUntil = 0;   // cooldown timestamp for boundary penalty
+  let outsideCorridor = false;      // true while player is outside the path
   let pathSegments = [];             // [{lat1,lng1,lat2,lng2}, …] built from waypoints
   let ghostInterval = null;
   let lastPositionTime = 0;
@@ -795,14 +813,17 @@
   }
 
   function boundaryViolation() {
-    lives--;
     score = Math.max(0, score - (GAME_CONFIG.boundaryPenalty || 50));
-    boundaryViolationUntil = Date.now() + (GAME_CONFIG.boundaryCooldown || 5000);
-    flashRed();
+    boundaryViolationUntil = Date.now() + (GAME_CONFIG.boundaryCooldown || 30000);
     soundGhostHit();
     try { navigator.vibrate && navigator.vibrate([100, 50, 100, 50, 100]); } catch (_) {}
     updateHeader();
-    if (lives <= 0) gameOver();
+  }
+
+  function setBoundaryOverlay(active) {
+    if (active === outsideCorridor) return;
+    outsideCorridor = active;
+    $boundaryOverlay.classList.toggle("active", active);
   }
 
   function checkBoundary() {
@@ -811,12 +832,14 @@
     const now = Date.now();
     // Grace period after game start
     if (gameStartTime && (now - gameStartTime) < (GAME_CONFIG.boundaryGracePeriod || 15) * 1000) return;
-    // Cooldown after last violation
-    if (now < boundaryViolationUntil) return;
-    // Immune players skip boundary checks too
-    if (now < immuneUntil) return;
-    if (!isInsideCorridor(playerLat, playerLng)) {
-      boundaryViolation();
+    const inside = isInsideCorridor(playerLat, playerLng);
+    // Show/hide persistent red overlay
+    setBoundaryOverlay(!inside);
+    if (!inside) {
+      // Apply point penalty on cooldown
+      if (now >= boundaryViolationUntil && now >= immuneUntil) {
+        boundaryViolation();
+      }
     }
   }
 
@@ -1314,6 +1337,7 @@
     ghostObjects = [];
 
     score = 0; lives = 3; collectedCount = 0; immuneUntil = 0; boundaryViolationUntil = 0;
+    setBoundaryOverlay(false);
     gameStartTime = 0;
     lastEntryId = null;
     pendingMysteryDot = null;

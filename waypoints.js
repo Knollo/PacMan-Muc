@@ -16,7 +16,7 @@ const GAME_CONFIG = {
   // Boundary / invisible walls – corridor along the waypoint path
   corridorWidth: 5,          // meters each side of path center line
   boundaryPenalty: 50,       // points deducted on violation
-  boundaryCooldown: 5000,    // ms before next violation can trigger
+  boundaryCooldown: 30000,    // ms before next penalty can trigger
   boundaryGracePeriod: 15,   // seconds after game start before checks begin
 
   // Win message – delivered by server API after game completion
