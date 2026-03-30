@@ -546,6 +546,10 @@
   let ghostInterval = null;
   let lastPositionTime = 0;
   let previousLat = null, previousLng = null;
+  // GPS spoofing detection state
+  let gpsAccuracyHistory = [];       // last N accuracy values
+  let gpsSpoofWarnings = 0;          // accumulated warnings
+  let gpsSpoofConfirmed = false;     // true when cheating is flagged
   let pendingMysteryDot = null;
   let immunityTimerInterval = null;
   let playerName = "";
@@ -1096,6 +1100,44 @@
   }
 
   function updatePlayerPosition(lat, lng, accuracy) {
+    // ── GPS spoofing detection ──────────────────────────────────────
+    if (gameRunning && !gpsSpoofConfirmed) {
+      let warn = false;
+
+      // 1) Suspiciously perfect accuracy (<1m is almost impossible on phones)
+      if (accuracy !== undefined && accuracy < 1) warn = true;
+
+      // 2) Constant accuracy – collect last 10 readings, flag if all identical
+      if (accuracy !== undefined) {
+        gpsAccuracyHistory.push(accuracy);
+        if (gpsAccuracyHistory.length > 10) gpsAccuracyHistory.shift();
+        if (gpsAccuracyHistory.length >= 10) {
+          const allSame = gpsAccuracyHistory.every(a => a === gpsAccuracyHistory[0]);
+          if (allSame) warn = true;
+        }
+      }
+
+      // 3) Teleport detection – impossible speed between two GPS updates
+      if (previousLat !== null && previousLng !== null && lastPositionTime > 0) {
+        const dt = (Date.now() - lastPositionTime) / 1000;
+        if (dt > 0.5) {
+          const dist = getDistance(previousLat, previousLng, lat, lng);
+          const speed = dist / dt;   // m/s
+          if (speed > 30) warn = true;  // >108 km/h = impossible on foot
+        }
+      }
+      lastPositionTime = Date.now();
+
+      if (warn) {
+        gpsSpoofWarnings++;
+        // Require 3 warnings before flagging (avoid false positives)
+        if (gpsSpoofWarnings >= 3) {
+          gpsSpoofConfirmed = true;
+          console.warn("GPS spoofing detected!");
+        }
+      }
+    }
+
     // Determine heading from movement
     if (previousLat !== null && previousLng !== null) {
       const d = getDistance(previousLat, previousLng, lat, lng);
@@ -1130,6 +1172,13 @@
   // ── Proximity checks ─────────────────────────────────────────────
   function checkProximity() {
     if (!gameRunning || playerLat === null) return;
+
+    // Block all game progress when GPS spoofing is detected
+    if (gpsSpoofConfirmed) {
+      $gpsAcc.textContent = "⚠️ GPS-Fake erkannt!";
+      $gpsAcc.style.color = "#f44";
+      return;
+    }
 
     const now = Date.now();
 
@@ -1337,6 +1386,8 @@
     ghostObjects = [];
 
     score = 0; lives = 3; collectedCount = 0; immuneUntil = 0; boundaryViolationUntil = 0;
+    gpsAccuracyHistory = []; gpsSpoofWarnings = 0; gpsSpoofConfirmed = false;
+    $gpsAcc.style.color = "";
     setBoundaryOverlay(false);
     gameStartTime = 0;
     lastEntryId = null;
