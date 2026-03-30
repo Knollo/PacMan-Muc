@@ -523,6 +523,8 @@
   let autoCenter = true;
   let immuneUntil = 0;
   let gameRunning = false;
+  let boundaryViolationUntil = 0;   // cooldown timestamp for boundary hits
+  let pathSegments = [];             // [{lat1,lng1,lat2,lng2}, …] built from waypoints
   let ghostInterval = null;
   let lastPositionTime = 0;
   let previousLat = null, previousLng = null;
@@ -756,6 +758,66 @@
   // ── Interpolate between two latlngs by a fraction t ──────────────
   function interpolate(a, b, t) {
     return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  }
+
+  // ── Boundary system – invisible corridor walls ─────────────────
+  function buildPathSegments() {
+    const wps = GAME_CONFIG.waypoints;
+    pathSegments = [];
+    for (let i = 0; i < wps.length - 1; i++) {
+      pathSegments.push({
+        lat1: wps[i].lat, lng1: wps[i].lng,
+        lat2: wps[i + 1].lat, lng2: wps[i + 1].lng
+      });
+    }
+  }
+
+  // Perpendicular distance from point to line segment (meters)
+  function getDistanceToSegment(pLat, pLng, seg) {
+    const ax = seg.lat1, ay = seg.lng1;
+    const bx = seg.lat2, by = seg.lng2;
+    const dx = bx - ax, dy = by - ay;
+    const lenSq = dx * dx + dy * dy;
+    if (lenSq === 0) return getDistance(pLat, pLng, ax, ay);
+    let t = ((pLat - ax) * dx + (pLng - ay) * dy) / lenSq;
+    t = Math.max(0, Math.min(1, t));
+    const closestLat = ax + t * dx;
+    const closestLng = ay + t * dy;
+    return getDistance(pLat, pLng, closestLat, closestLng);
+  }
+
+  function isInsideCorridor(lat, lng) {
+    const w = GAME_CONFIG.corridorWidth || 5;
+    for (let i = 0; i < pathSegments.length; i++) {
+      if (getDistanceToSegment(lat, lng, pathSegments[i]) <= w) return true;
+    }
+    return false;
+  }
+
+  function boundaryViolation() {
+    lives--;
+    score = Math.max(0, score - (GAME_CONFIG.boundaryPenalty || 50));
+    boundaryViolationUntil = Date.now() + (GAME_CONFIG.boundaryCooldown || 5000);
+    flashRed();
+    soundGhostHit();
+    try { navigator.vibrate && navigator.vibrate([100, 50, 100, 50, 100]); } catch (_) {}
+    updateHeader();
+    if (lives <= 0) gameOver();
+  }
+
+  function checkBoundary() {
+    if (!gameRunning || playerLat === null) return;
+    if (pathSegments.length === 0) return;
+    const now = Date.now();
+    // Grace period after game start
+    if (gameStartTime && (now - gameStartTime) < (GAME_CONFIG.boundaryGracePeriod || 15) * 1000) return;
+    // Cooldown after last violation
+    if (now < boundaryViolationUntil) return;
+    // Immune players skip boundary checks too
+    if (now < immuneUntil) return;
+    if (!isInsideCorridor(playerLat, playerLng)) {
+      boundaryViolation();
+    }
   }
 
   // ── UI helpers ────────────────────────────────────────────────────
@@ -1066,6 +1128,9 @@
         ghostHit();
       }
     });
+
+    // Check invisible corridor walls
+    checkBoundary();
   }
 
   function collectDot(dot) {
@@ -1248,7 +1313,7 @@
     dots = [];
     ghostObjects = [];
 
-    score = 0; lives = 3; collectedCount = 0; immuneUntil = 0;
+    score = 0; lives = 3; collectedCount = 0; immuneUntil = 0; boundaryViolationUntil = 0;
     gameStartTime = 0;
     lastEntryId = null;
     pendingMysteryDot = null;
@@ -1258,6 +1323,7 @@
     updateHeader();
 
     placeDots();
+    buildPathSegments();
     placeGhosts();
 
     $winScreen.style.display = "none";
@@ -1348,6 +1414,7 @@
 
     initMap();
     placeDots();
+    buildPathSegments();
     placeGhosts();
     updateHeader();
     startGPS();

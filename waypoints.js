@@ -13,6 +13,12 @@ const GAME_CONFIG = {
   // Immunity after ghost hit (seconds)
   immunityDuration: 30,
 
+  // Boundary / invisible walls – corridor along the waypoint path
+  corridorWidth: 5,          // meters each side of path center line
+  boundaryPenalty: 50,       // points deducted on violation
+  boundaryCooldown: 5000,    // ms before next violation can trigger
+  boundaryGracePeriod: 15,   // seconds after game start before checks begin
+
   // Win message – delivered by server API after game completion
   winTitle: "🎉 Gratulation!",
 
