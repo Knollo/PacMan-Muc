@@ -348,7 +348,8 @@
 <!-- Webcam ghost overlay -->
 <div id="webcam-overlay">
   <div class="ghost-photo">
-    <span class="ghost-emoji">👻</span>
+    <img class="ghost-photo-img" id="ghost-photo-img" src="" alt="Ghost" style="width:100%;height:100%;object-fit:cover;display:none;border-radius:17px;" />
+    <span class="ghost-emoji" id="ghost-emoji-fallback">👻</span>
   </div>
   <div class="ghost-label" data-i18n="webcamLabel">📸 Webcam-Cache gefunden!<br>Der Geist sagt: Cheeeese! 😂</div>
 </div>
@@ -811,6 +812,16 @@
 
   function isInsideCorridor(lat, lng) {
     const w = GAME_CONFIG.corridorWidth || 5;
+    // Entrance safe zones – wider radius around entry waypoints
+    const entranceRadius = GAME_CONFIG.entranceSafeRadius || 20;
+    const entrances = GAME_CONFIG.entranceWaypoints || [];
+    const wps = GAME_CONFIG.waypoints;
+    for (let i = 0; i < entrances.length; i++) {
+      const idx = entrances[i];
+      if (idx >= 0 && idx < wps.length) {
+        if (getDistance(lat, lng, wps[idx].lat, wps[idx].lng) <= entranceRadius) return true;
+      }
+    }
     for (let i = 0; i < pathSegments.length; i++) {
       if (getDistanceToSegment(lat, lng, pathSegments[i]) <= w) return true;
     }
@@ -1294,13 +1305,29 @@
   }
 
   // ── Webcam ghost photo effect ────────────────────────────────────
+  const GHOST_PHOTOS = [
+    "Images/Polaroid-Geist blau-300px.png",
+    "Images/Polaroid-Geist orange-300px.png",
+    "Images/Polaroid-Geist pink-300px.png",
+    "Images/Polaroid-Geist rot-300px.png"
+  ];
+  const $ghostPhotoImg = document.getElementById("ghost-photo-img");
+  const $ghostEmojiFallback = document.getElementById("ghost-emoji-fallback");
+
   function showWebcamEffect(dot) {
     dot.collected = true;
     gameRunning = false;
     soundGhostLaugh();
+    // Show random Polaroid ghost photo
+    const photo = GHOST_PHOTOS[Math.floor(Math.random() * GHOST_PHOTOS.length)];
+    $ghostPhotoImg.src = photo;
+    $ghostPhotoImg.style.display = "block";
+    $ghostEmojiFallback.style.display = "none";
     $webcamOverlay.classList.add("visible");
     setTimeout(() => {
       $webcamOverlay.classList.remove("visible");
+      $ghostPhotoImg.style.display = "none";
+      $ghostEmojiFallback.style.display = "";
       gameRunning = true;
       finalizeCollect(dot);
     }, 3000);

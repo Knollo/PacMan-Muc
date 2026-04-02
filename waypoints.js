@@ -19,6 +19,10 @@ const GAME_CONFIG = {
   boundaryCooldown: 30000,    // ms before next penalty can trigger
   boundaryGracePeriod: 15,   // seconds after game start before checks begin
 
+  // Entrance safe zones – waypoint indices (0-based) with wider boundary tolerance
+  entranceWaypoints: [94, 98],  // Punkt 95 (Eingang Nord), Punkt 99 (Eingang Süd)
+  entranceSafeRadius: 20,       // meters – boundary-free zone around entrances
+
   // Win message – delivered by server API after game completion
   winTitle: "🎉 Gratulation!",
 
@@ -131,16 +135,16 @@ const GAME_CONFIG = {
     { lat: 48.12497, lng: 11.56381, type: "earth", label: "Punkt 87" },
     { lat: 48.12508, lng: 11.56390, type: "multi", label: "Punkt 88" },
     { lat: 48.12521, lng: 11.56399, type: "traditional", label: "Punkt 89" },
-    { lat: 48.12532, lng: 11.56407, type: "traditional", label: "Punkt 90" },
+    { lat: 48.12532, lng: 11.56407, type: "webcam", label: "Punkt 90" },
     { lat: 48.12518, lng: 11.56455, type: "traditional", label: "Punkt 91" },
     { lat: 48.12506, lng: 11.56447, type: "event", label: "Punkt 92" },
     { lat: 48.12526, lng: 11.56461, type: "letterbox", label: "Punkt 93" },
     { lat: 48.12586, lng: 11.56281, type: "webcam", label: "Punkt 94" },
-    { lat: 48.12623, lng: 11.56423, type: "event", label: "Punkt 95" },
+    { lat: 48.12623, lng: 11.56423, type: "event", label: "Punkt 95 - Eingang Nord" },
     { lat: 48.12609, lng: 11.56464, type: "letterbox", label: "Punkt 96" },
     { lat: 48.12638, lng: 11.56377, type: "traditional", label: "Punkt 97" },
     { lat: 48.12502, lng: 11.56277, type: "event", label: "Punkt 98" },
-    { lat: 48.12487, lng: 11.56323, type: "traditional", label: "Punkt 99" },
+    { lat: 48.12487, lng: 11.56323, type: "traditional", label: "Punkt 99 - Eingang Süd" },
     { lat: 48.12476, lng: 11.56355, type: "event", label: "Punkt 100" } 
   ],
 
