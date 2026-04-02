@@ -1331,10 +1331,13 @@
   const $ghostPhotoImg = document.getElementById("ghost-photo-img");
   const $ghostEmojiFallback = document.getElementById("ghost-emoji-fallback");
 
+  const cameraSoundAudio = new Audio("iphone-camera.mp3");
+
   function showWebcamEffect(dot) {
     dot.collected = true;
     gameRunning = false;
-    soundGhostLaugh();
+    cameraSoundAudio.currentTime = 0;
+    cameraSoundAudio.play().catch(() => {});
     // Show random Polaroid ghost photo
     const photo = GHOST_PHOTOS[Math.floor(Math.random() * GHOST_PHOTOS.length)];
     $ghostPhotoImg.src = photo;
