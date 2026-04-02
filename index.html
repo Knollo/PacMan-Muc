@@ -234,6 +234,11 @@
   <p data-i18n="startDesc">Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!</p>
   <p class="subtitle" data-i18n="startSub">GPS-basiertes Outdoor-Spiel · 3 Leben · 100 Caches</p>
   <input type="text" id="player-name-input" class="name-input" data-i18n-placeholder="namePlaceholder" placeholder="Dein Spielername..." maxlength="50" autocomplete="off" />
+  <div id="anonymous-prompt" style="display:none; margin-top:10px; padding:12px; background:rgba(255,204,6,.12); border:1px solid #e2b714; border-radius:10px; text-align:center;">
+    <p style="color:#e2b714; margin:0 0 10px; font-size:.95rem;" data-i18n="anonQuestion">Ohne Namen spielst du anonym als „PacMan".<br>Dein Ergebnis erscheint nicht in der Bestenliste.</p>
+    <button id="btn-anon-play" style="margin:4px; padding:8px 18px; font-size:.9rem; background:#e2b714; color:#000; border:none; border-radius:8px; cursor:pointer; font-weight:700;" data-i18n="anonPlay">👻 Anonym spielen</button>
+    <button id="btn-anon-name" style="margin:4px; padding:8px 18px; font-size:.9rem; background:transparent; color:#e2b714; border:1px solid #e2b714; border-radius:8px; cursor:pointer;" data-i18n="anonName">✏️ Namen eingeben</button>
+  </div>
   <button id="btn-start" style="margin-top: 12px;">▶ START</button>
   <p style="margin-top: 14px;">
     <a href="tutorial.html" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;" data-i18n="tutorialLink">📖 Tutorial – So funktioniert's</a>
@@ -408,6 +413,10 @@
       startSub: 'GPS-basiertes Outdoor-Spiel · 3 Leben · 100 Caches',
       namePlaceholder: 'Dein Spielername...',
       nameEmpty: 'Bitte Namen eingeben!',
+      nameAnonymousHint: 'Name eingeben oder anonym spielen...',
+      anonQuestion: 'Ohne Namen spielst du anonym als „PacMan".<br>Dein Ergebnis erscheint nicht in der Bestenliste.',
+      anonPlay: '👻 Anonym spielen',
+      anonName: '✏️ Namen eingeben',
       tutorialLink: '📖 Tutorial – So funktioniert\'s',
       leaderboardLink: '🏆 Bestenliste',
       rewardText: 'Die Belohnung für PacMan kannst du dir am Ende hier abholen: <a href="https://coord.info/GCBKNAT" target="_blank" rel="noopener noreferrer" style="color: #00cc44;">GCBKNAT</a>',
@@ -446,6 +455,10 @@
       startSub: 'GPS-based outdoor game · 3 lives · 100 caches',
       namePlaceholder: 'Your player name...',
       nameEmpty: 'Please enter a name!',
+      nameAnonymousHint: 'Enter a name or play anonymously...',
+      anonQuestion: 'Without a name you play anonymously as "PacMan".<br>Your result won\'t appear on the leaderboard.',
+      anonPlay: '👻 Play anonymously',
+      anonName: '✏️ Enter name',
       tutorialLink: '📖 Tutorial – How to play',
       leaderboardLink: '🏆 Leaderboard',
       rewardText: 'Claim your PacMan reward at the end here: <a href="https://coord.info/GCBKNAT" target="_blank" rel="noopener noreferrer" style="color: #00cc44;">GCBKNAT</a>',
@@ -555,6 +568,7 @@
   let pendingMysteryDot = null;
   let immunityTimerInterval = null;
   let playerName = "";
+  let isAnonymous = false;  // true when playing without name as "PacMan"
   let gameStartTime = 0;
   let gameTimerInterval = null;
   let lastEntryId = null;
@@ -1377,9 +1391,10 @@
     $winStats.textContent = t('winStats', { score, time: formatTime(timeSeconds), lives });
     $winScreen.style.display = "flex";
 
-    // Submit score (visible by default)
-    $leaderboardVisible.checked = true;
-    const { entries, winMessage } = await submitScore(true);
+    // Submit score (visible by default, hidden for anonymous)
+    $leaderboardVisible.checked = !isAnonymous;
+    document.getElementById("visibility-toggle").style.display = isAnonymous ? "none" : "block";
+    const { entries, winMessage } = await submitScore(!isAnonymous);
     if (winMessage) {
       $winMessage.textContent = winMessage;
     } else {
@@ -1491,16 +1506,29 @@
   }
 
   // ── Start game ────────────────────────────────────────────────────
+  let awaitingAnonymousConfirm = false;
+
   function startGame() {
     const name = $playerNameInput.value.trim();
-    if (!name) {
+    if (!name && !awaitingAnonymousConfirm) {
+        // First click without name – ask for confirmation
+        awaitingAnonymousConfirm = true;
         $playerNameInput.style.borderColor = "#f44";
-        $playerNameInput.focus();
-        $playerNameInput.placeholder = t('nameEmpty');
+        $playerNameInput.placeholder = t('nameAnonymousHint');
+        document.getElementById("anonymous-prompt").style.display = "block";
         return;
     }
-    playerName = name;
-    sessionStorage.setItem("pacman_player_name", name);
+    if (!name) {
+        // Second click or confirmed anonymous – play as "PacMan"
+        playerName = "PacMan";
+        isAnonymous = true;
+    } else {
+        playerName = name;
+        isAnonymous = false;
+        sessionStorage.setItem("pacman_player_name", name);
+    }
+    awaitingAnonymousConfirm = false;
+    document.getElementById("anonymous-prompt").style.display = "none";
 
     fetch(`${LEADERBOARD_API}?action=notify`, {
       method: "POST",
@@ -1529,6 +1557,21 @@
 
   // ── Event bindings ────────────────────────────────────────────────
   document.getElementById("btn-start").addEventListener("click", startGame);
+  document.getElementById("btn-anon-play").addEventListener("click", startGame);
+  document.getElementById("btn-anon-name").addEventListener("click", () => {
+    awaitingAnonymousConfirm = false;
+    document.getElementById("anonymous-prompt").style.display = "none";
+    $playerNameInput.style.borderColor = "";
+    $playerNameInput.placeholder = t('namePlaceholder');
+    $playerNameInput.focus();
+  });
+  $playerNameInput.addEventListener("input", () => {
+    if (awaitingAnonymousConfirm) {
+      awaitingAnonymousConfirm = false;
+      document.getElementById("anonymous-prompt").style.display = "none";
+      $playerNameInput.style.borderColor = "";
+    }
+  });
   document.getElementById("btn-restart-win").addEventListener("click", resetGame);
   document.getElementById("btn-restart-go").addEventListener("click", resetGame);
   $centerBtn.addEventListener("click", () => {
