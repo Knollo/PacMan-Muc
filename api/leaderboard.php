@@ -50,12 +50,12 @@ $DB_USER = '%%MYSQL_DB%%'; // Injected by GitHub Actions (same as DB_NAME)
 $DB_PASS = '%%MYSQL_PW%%'; // Injected by GitHub Actions
 
 // Win message – only delivered server-side after game completion
-$WIN_MESSAGE_DE = "Du hast alle Punkte gesammelt! Hier ist der Hinweis zum Bonus-Cache für den absolvierten Power-Trail:\n\n"
+$WIN_MESSAGE_DE = "Du hast alle Caches gesammelt! Hier ist der Hinweis zum Bonus-Cache für den absolvierten Power-Trail:\n\n"
     . "Der Cache befindet etwas abseits der Geisterzone hinter einem passsenden gelben Objekt.\n"
     . "Koordinaten: N 48° 07.685 E 11° 33.687\n\n"
     . "Viel Erfolg beim Suchen und Entspannen nach der Geisterjagd!";
 
-$WIN_MESSAGE_EN = "You collected all the points! Here is the clue for the bonus cache for completing the power trail:\n\n"
+$WIN_MESSAGE_EN = "You collected all the caches! Here is the clue for the bonus cache for completing the power trail:\n\n"
     . "The cache is located slightly outside the ghost zone behind a fitting yellow object.\n"
     . "Coordinates: N 48° 07.685 E 11° 33.687\n\n"
     . "Good luck searching and relaxing after the ghost hunt!";
