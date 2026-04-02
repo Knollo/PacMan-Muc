@@ -1136,13 +1136,14 @@
       // 1) Suspiciously perfect accuracy (<1m is almost impossible on phones)
       if (accuracy !== undefined && accuracy < 1) warn = true;
 
-      // 2) Constant accuracy – collect last 10 readings, flag if all identical
+      // 2) Constant accuracy – collect last 20 readings, flag if ALL identical
+      //    (many devices round accuracy, so only flag exact 0-value streaks)
       if (accuracy !== undefined) {
-        gpsAccuracyHistory.push(accuracy);
-        if (gpsAccuracyHistory.length > 10) gpsAccuracyHistory.shift();
-        if (gpsAccuracyHistory.length >= 10) {
+        gpsAccuracyHistory.push(Math.round(accuracy * 10) / 10);
+        if (gpsAccuracyHistory.length > 20) gpsAccuracyHistory.shift();
+        if (gpsAccuracyHistory.length >= 20) {
           const allSame = gpsAccuracyHistory.every(a => a === gpsAccuracyHistory[0]);
-          if (allSame) warn = true;
+          if (allSame && gpsAccuracyHistory[0] <= 1) warn = true;
         }
       }
 
@@ -1152,18 +1153,21 @@
         if (dt > 0.5) {
           const dist = getDistance(previousLat, previousLng, lat, lng);
           const speed = dist / dt;   // m/s
-          if (speed > 30) warn = true;  // >108 km/h = impossible on foot
+          if (speed > 50) warn = true;  // >180 km/h = clearly impossible on foot
         }
       }
       lastPositionTime = Date.now();
 
       if (warn) {
         gpsSpoofWarnings++;
-        // Require 3 warnings before flagging (avoid false positives)
-        if (gpsSpoofWarnings >= 3) {
+        // Require 5 warnings before flagging (generous to avoid false positives)
+        if (gpsSpoofWarnings >= 5) {
           gpsSpoofConfirmed = true;
           console.warn("GPS spoofing detected!");
         }
+      } else if (gpsSpoofWarnings > 0) {
+        // Slowly decay warnings when readings are normal
+        gpsSpoofWarnings = Math.max(0, gpsSpoofWarnings - 0.5);
       }
     }
 
