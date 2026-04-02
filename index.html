@@ -161,6 +161,10 @@
     }
     #boundary-overlay.active { opacity: 1; }
     #boundary-overlay .skull { font-size: 120px; animation: skull-pulse 1s ease-in-out infinite; }
+    #boundary-overlay .boundary-text {
+      color: #fff; font-size: 1.2rem; font-weight: 700; text-align: center;
+      margin-top: 16px; text-shadow: 0 2px 8px rgba(0,0,0,.7);
+    }
     @keyframes skull-pulse {
       0%, 100% { transform: scale(1); opacity: 0.9; }
       50%      { transform: scale(1.15); opacity: 1; }
@@ -362,7 +366,10 @@
 <!-- Ghost-hit flash -->
 <div id="flash"></div>
 <!-- Boundary violation overlay (persistent red + skull) -->
-<div id="boundary-overlay"><span class="skull">☠️</span></div>
+<div id="boundary-overlay">
+  <span class="skull">☠️</span>
+  <div class="boundary-text" data-i18n="boundaryWarning">⚠️ Außerhalb des Spielfeldes!<br>−50 Punkte Strafe</div>
+</div>
 
 <!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -436,6 +443,7 @@
       mysteryCorrect: '✅ Richtig! Geister-Schutz für 60 Sekunden!',
       mysteryWrong: '❌ Falsch! Versuch es nochmal...',
       webcamLabel: '📸 Webcam-Cache gefunden!<br>Der Geist sagt: Cheeeese! 😂',
+      boundaryWarning: '⚠️ Außerhalb des Spielfeldes!<br>−50 Punkte Strafe',
       immunityBadge: '🛡️ Geister-Schutz: <span id="immunity-timer">{0}</span>s',
       winStats: 'Punkte: {score} · Zeit: {time} · Leben: {lives}/3',
       winSubmitting: 'Ergebnis wird übermittelt…',
@@ -479,6 +487,7 @@
       mysteryCorrect: '✅ Correct! Ghost protection for 60 seconds!',
       mysteryWrong: '❌ Wrong! Try again...',
       webcamLabel: '📸 Webcam cache found!<br>The ghost says: Cheeeese! 😂',
+      boundaryWarning: '⚠️ Outside the playing field!<br>−50 points penalty',
       immunityBadge: '🛡️ Ghost Shield: <span id="immunity-timer">{0}</span>s',
       winStats: 'Score: {score} · Time: {time} · Lives: {lives}/3',
       winSubmitting: 'Submitting result…',
@@ -828,7 +837,7 @@
   }
 
   function isInsideCorridor(lat, lng) {
-    const w = GAME_CONFIG.corridorWidth || 5;
+    const w = (GAME_CONFIG.corridorWidth || 5) + 0.5; // +0.5m tolerance
     // Entrance safe zones – wider radius around entry waypoints
     const entranceRadius = GAME_CONFIG.entranceSafeRadius || 20;
     const entrances = GAME_CONFIG.entranceWaypoints || [];
@@ -1405,12 +1414,12 @@
     $leaderboardVisible.checked = !isAnonymous;
     document.getElementById("visibility-toggle").style.display = isAnonymous ? "none" : "block";
     const { entries, winMessage } = await submitScore(!isAnonymous);
-    if (isAnonymous) {
-      $winMessage.textContent = t('winSuccessAnon');
-    } else if (winMessage) {
-      $winMessage.textContent = winMessage;
+    if (winMessage) {
+      // Always show server win message (contains bonus cache coordinates)
+      const anonNote = isAnonymous ? t('winSuccessAnon') + "\n\n" : "";
+      $winMessage.textContent = anonNote + winMessage;
     } else {
-      $winMessage.textContent = t('winSuccess');
+      $winMessage.textContent = isAnonymous ? t('winSuccessAnon') : t('winSuccess');
     }
     renderLeaderboard(entries, $winLeaderboard, lastEntryId);
 
