@@ -440,6 +440,7 @@
       winStats: 'Punkte: {score} · Zeit: {time} · Leben: {lives}/3',
       winSubmitting: 'Ergebnis wird übermittelt…',
       winSuccess: 'Glückwunsch! Dein Ergebnis wurde gespeichert.',
+      winSuccessAnon: 'Glückwunsch! Du hast anonym gespielt – dein Ergebnis ist nicht in der Bestenliste sichtbar.',
       goScore: 'Dein Punktestand: {score}',
       goTime: 'Zeit: {time}',
       noEntries: 'Noch keine Einträge',
@@ -482,6 +483,7 @@
       winStats: 'Score: {score} · Time: {time} · Lives: {lives}/3',
       winSubmitting: 'Submitting result…',
       winSuccess: 'Congratulations! Your result has been saved.',
+      winSuccessAnon: 'Congratulations! You played anonymously – your result is not visible on the leaderboard.',
       goScore: 'Your score: {score}',
       goTime: 'Time: {time}',
       noEntries: 'No entries yet',
@@ -1344,7 +1346,7 @@
       $ghostEmojiFallback.style.display = "";
       gameRunning = true;
       finalizeCollect(dot);
-    }, 3000);
+    }, 5000);
   }
 
   function activateImmunity(seconds) {
@@ -1395,7 +1397,9 @@
     $leaderboardVisible.checked = !isAnonymous;
     document.getElementById("visibility-toggle").style.display = isAnonymous ? "none" : "block";
     const { entries, winMessage } = await submitScore(!isAnonymous);
-    if (winMessage) {
+    if (isAnonymous) {
+      $winMessage.textContent = t('winSuccessAnon');
+    } else if (winMessage) {
       $winMessage.textContent = winMessage;
     } else {
       $winMessage.textContent = t('winSuccess');
