@@ -575,6 +575,7 @@
   let gpsAccuracyHistory = [];       // last N accuracy values
   let gpsSpoofWarnings = 0;          // accumulated warnings
   let gpsSpoofConfirmed = false;     // true when cheating is flagged
+  const gpsFakeTestMode = new URLSearchParams(window.location.search).has("gpsfake");
   let pendingMysteryDot = null;
   let immunityTimerInterval = null;
   let playerName = "";
@@ -1138,7 +1139,7 @@
 
   function updatePlayerPosition(lat, lng, accuracy) {
     // ── GPS spoofing detection ──────────────────────────────────────
-    if (gameRunning && !gpsSpoofConfirmed) {
+    if (gameRunning && !gpsSpoofConfirmed && !gpsFakeTestMode) {
       let warn = false;
 
       // 1) Suspiciously perfect accuracy (<1m is almost impossible on phones)
