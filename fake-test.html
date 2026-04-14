@@ -1556,6 +1556,10 @@
       body: JSON.stringify({ player_name: name })
     }).catch(() => {});
 
+    // Reset score / lives so a fresh start never carries over old values
+    score = 0; lives = 3; collectedCount = 0; immuneUntil = 0; boundaryViolationUntil = 0;
+    gpsAccuracyHistory = []; gpsSpoofWarnings = 0; gpsSpoofConfirmed = false;
+
     ensureAudio();
     $startScreen.style.display = "none";
     $header.style.display = "flex";

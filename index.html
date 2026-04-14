@@ -836,7 +836,7 @@
   }
 
   function isInsideCorridor(lat, lng) {
-    const w = (GAME_CONFIG.corridorWidth || 5) + 0.5; // +0.5m tolerance
+    const w = (GAME_CONFIG.corridorWidth || 5) + 1; // +1m tolerance
     // Entrance safe zones – wider radius around entry waypoints
     const entranceRadius = GAME_CONFIG.entranceSafeRadius || 20;
     const entrances = GAME_CONFIG.entranceWaypoints || [];
@@ -1555,6 +1555,10 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ player_name: name })
     }).catch(() => {});
+
+    // Reset score / lives so a fresh start never carries over old values
+    score = 0; lives = 3; collectedCount = 0; immuneUntil = 0; boundaryViolationUntil = 0;
+    gpsAccuracyHistory = []; gpsSpoofWarnings = 0; gpsSpoofConfirmed = false;
 
     ensureAudio();
     $startScreen.style.display = "none";

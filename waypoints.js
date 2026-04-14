@@ -14,7 +14,7 @@ const GAME_CONFIG = {
   immunityDuration: 30,
 
   // Boundary / invisible walls – corridor along the waypoint path
-  corridorWidth: 5,          // meters each side of path center line
+  corridorWidth: 6,          // meters each side of path center line
   boundaryPenalty: 50,       // points deducted on violation
   boundaryCooldown: 30000,    // ms before next penalty can trigger
   boundaryGracePeriod: 15,   // seconds after game start before checks begin
