@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="icon" type="image/svg+xml" href="Images/pacman.svg" />
-  <title>PacMan München – Testmodus</title>
+  <title>PacMan München</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     /* ── Reset & base ──────────────────────────────────────────────── */
@@ -30,12 +28,9 @@
     /* ── Overlays ──────────────────────────────────────────────────── */
     .overlay {
       position: fixed; inset: 0; z-index: 2000;
-      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       background: rgba(15,15,35,.92); text-align: center; padding: 24px;
-      overflow-y: auto; -webkit-overflow-scrolling: touch;
     }
-    #start-screen { justify-content: center; }
-    #win-screen, #game-over-screen, #leaderboard-screen { padding-top: 48px; }
     .overlay h1 { font-size: 2rem; margin-bottom: 12px; }
     .overlay p, .overlay pre { font-size: 1rem; line-height: 1.5; max-width: 420px; margin-bottom: 16px; white-space: pre-wrap; }
     .overlay pre { text-align: left; background: #1a1a2e; padding: 12px; border-radius: 8px; font-family: monospace; font-size: .85rem; }
@@ -52,59 +47,6 @@
         padding: 4px 10px; border-radius: 12px; font-size: .8rem; font-weight: 700;
         display: none;
     }
-
-    /* ── Help button ─────────────────────────────────────────────── */
-    #help-btn {
-        position: fixed; top: 54px; left: 12px; z-index: 1500;
-        background: rgba(26,26,46,.85); color: #e2b714; border: 1px solid #e2b714;
-        width: 32px; height: 32px; border-radius: 50%; font-size: 1rem;
-        cursor: pointer; display: none; line-height: 1;
-    }
-    #help-overlay {
-        position: fixed; inset: 0; z-index: 2600;
-        display: none; flex-direction: column; align-items: center;
-        background: rgba(15,15,35,.95); padding: 24px; overflow-y: auto;
-    }
-    #help-overlay.visible { display: flex; }
-    #help-overlay .help-content {
-        max-width: 420px; width: 100%; text-align: left; color: #ccc;
-        font-size: .85rem; line-height: 1.6;
-    }
-    #help-overlay .help-content h2 { color: #e2b714; font-size: 1.2rem; margin: 16px 0 8px; }
-    #help-overlay .help-content h2:first-child { margin-top: 0; }
-    #help-overlay .help-content ul { padding-left: 20px; margin-bottom: 8px; }
-    #help-overlay .help-close {
-        margin-top: 20px; padding: 12px 40px; font-size: 1rem; font-weight: 700;
-        border: none; border-radius: 10px; cursor: pointer;
-        background: #e2b714; color: #0f0f23;
-    }
-
-    /* ── Webcam ghost overlay ─────────────────────────────────────── */
-    #webcam-overlay {
-      display: none; position: fixed; inset: 0; z-index: 2700;
-      background: rgba(0,0,0,.88);
-      flex-direction: column; align-items: center; justify-content: center;
-    }
-    #webcam-overlay.visible { display: flex; }
-    #webcam-overlay .ghost-photo {
-      position: relative; width: 280px; height: 280px;
-      background: linear-gradient(135deg, #1a1a2e, #2a2a4a);
-      border-radius: 20px; border: 3px solid #e2b714;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    #webcam-overlay .ghost-emoji {
-      font-size: 10rem; animation: ghostBounce 0.6s ease-in-out infinite alternate;
-    }
-    #webcam-overlay .ghost-label {
-      color: #e2b714; font-size: 1.3rem; font-weight: 700; margin-top: 18px;
-      text-align: center;
-    }
-    @keyframes ghostBounce {
-      from { transform: scale(1) rotate(-5deg); }
-      to   { transform: scale(1.15) rotate(5deg); }
-    }
-
     .leaderboard-table {
         width: 100%; max-width: 400px; border-collapse: collapse;
         margin: 8px auto; font-size: .9rem;
@@ -223,17 +165,15 @@
 <!-- Start Screen -->
 <div class="overlay" id="start-screen">
   <h1>🎮 PacMan München</h1>
-  <p data-i18n="startDesc">Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!</p>
-  <p class="subtitle" data-i18n="startSub">GPS-basiertes Outdoor-Spiel · 3 Leben · 100 Caches</p>
-  <input type="text" id="player-name-input" class="name-input" data-i18n-placeholder="namePlaceholder" placeholder="Dein Spielername..." maxlength="50" autocomplete="off" />
+  <p>Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!</p>
+  <p class="subtitle">GPS-basiertes Outdoor-Spiel · 3 Leben · 92 Punkte</p>
+  <input type="text" id="player-name-input" class="name-input" placeholder="Dein Spielername..." maxlength="50" autocomplete="off" />
   <button id="btn-start" style="margin-top: 12px;">▶ START</button>
   <p style="margin-top: 14px;">
-    <a href="tutorial.html" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;" data-i18n="tutorialLink">📖 Tutorial – So funktioniert's</a>
+    <a href="tutorial.html" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;">📖 Tutorial – So funktioniert's</a>
     <span style="margin: 0 8px; color: #444;">|</span>
-    <a href="#" id="btn-show-leaderboard" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;" data-i18n="leaderboardLink">🏆 Bestenliste</a>
+    <a href="#" id="btn-show-leaderboard" style="color: #e2b714; font-size: 0.9rem; text-decoration: none;">🏆 Bestenliste</a>
   </p>
-  <p style="margin-top: 18px; color: #00cc44; font-size: 0.85rem;" data-i18n="rewardText">Die Belohnung für PacMan kannst du dir am Ende hier abholen: <a href="https://coord.info/GCBKNAT" target="_blank" rel="noopener noreferrer" style="color: #00cc44;">GCBKNAT</a></p>
-  <button id="btn-lang" style="margin-top: 10px; padding: 8px 20px; font-size: .85rem; background: transparent; color: #e2b714; border: 1px solid #e2b714; border-radius: 20px; cursor: pointer;">🌐 English</button>
 </div>
 
 <!-- Win Screen -->
@@ -245,32 +185,26 @@
   <div class="visibility-toggle" id="visibility-toggle">
     <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:.9rem; color:#aaa; margin: 12px 0;">
       <input type="checkbox" id="leaderboard-visible" checked />
-      <span data-i18n="visibilityLabel">Ergebnis in der Bestenliste anzeigen</span>
+      Ergebnis in der Bestenliste anzeigen
     </label>
   </div>
-  <button id="btn-restart-win" data-i18n="restartBtn">🔄 Nochmal spielen</button>
+  <button id="btn-restart-win">🔄 Nochmal spielen</button>
 </div>
 
 <!-- Game Over Screen -->
 <div class="overlay" id="game-over-screen" style="display:none">
-  <h1 data-i18n="gameOverTitle">💀 Game Over</h1>
-  <p data-i18n="gameOverDesc">Die Geister haben dich erwischt!</p>
+  <h1>💀 Game Over</h1>
+  <p>Die Geister haben dich erwischt!</p>
   <p id="go-score"></p>
   <p id="go-time" style="color:#aaa; font-size:.9rem;"></p>
-  <button id="btn-restart-go" data-i18n="restartBtn">🔄 Nochmal spielen</button>
+  <button id="btn-restart-go">🔄 Nochmal spielen</button>
 </div>
 
 <!-- Leaderboard Screen -->
 <div class="overlay" id="leaderboard-screen" style="display:none">
-  <h1 data-i18n="leaderboardTitle">🏆 Bestenliste</h1>
+  <h1>🏆 Bestenliste</h1>
   <div id="leaderboard-content"></div>
-  <div id="leaderboard-pager" style="display:none; margin-top: 12px; align-items: center; gap: 16px;">
-    <button id="btn-lb-prev" style="padding: 8px 16px; font-size: 1.1rem; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; background: #e2b714; color: #0f0f23;">◀</button>
-    <span id="lb-page-info" style="color: #aaa; font-size: .9rem;">1/1</span>
-    <button id="btn-lb-next" style="padding: 8px 16px; font-size: 1.1rem; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; background: #e2b714; color: #0f0f23;">▶</button>
-  </div>
-  <button id="btn-close-leaderboard" style="margin-top: 16px; flex-shrink: 0;" data-i18n="backBtn">← Zurück</button>
-  <div style="height: 24px; flex-shrink: 0;"></div>
+  <button id="btn-close-leaderboard" style="margin-top: 16px;">← Zurück</button>
 </div>
 
 <!-- Desktop hint -->
@@ -282,71 +216,23 @@
 <!-- Game timer -->
 <div id="game-timer">⏱️ 00:00</div>
 
-<!-- Help button (shown during game) -->
-<button id="help-btn">❓</button>
-
-<!-- Help overlay -->
-<div id="help-overlay">
-  <div class="help-content" id="help-content-inner" data-i18n-html="helpContent">
-    <h2>🎯 Spielidee</h2>
-    <p>Sammle alle 100 Caches im Alten Südlichen Friedhof – aber pass auf die Geister auf!</p>
-
-    <h2>🚶 Steuerung</h2>
-    <ul>
-      <li>Dein GPS bewegt den PacMan automatisch</li>
-      <li>Laufe nahe an Caches heran (~10m) zum Einsammeln</li>
-      <li>Halte 5m Abstand zu Geistern!</li>
-    </ul>
-
-    <h2>📦 Cache-Typen</h2>
-    <ul>
-      <li>🟢 Traditional: 5 Pkt</li>
-      <li>🔵 Multi: 10 Pkt</li>
-      <li>📬 Letterbox: 15 Pkt</li>
-      <li>🔮 Mystery: 20 Pkt + 60s Schutz</li>
-      <li>🟡 Virtual: 25 Pkt + ❤️ Leben</li>
-      <li>🟤 Earth: 25 Pkt</li>
-      <li>📷 Webcam: 25 Pkt</li>
-      <li>🎪 Event: 30 Pkt</li>
-    </ul>
-
-    <h2>👻 Geister</h2>
-    <ul>
-      <li>🔴 Blinky – verfolgt dich direkt</li>
-      <li>🩷 Pinky – schneidet dir den Weg ab</li>
-      <li>🩵 Inky – unberechenbar</li>
-      <li>🟠 Stinky – wird schneller in deiner Nähe</li>
-    </ul>
-    <p>Treffer: −50 Punkte + Leben verloren · 30s Schutz 🛡️</p>
-  </div>
-  <button class="help-close" id="btn-close-help" data-i18n="closeBtn">✕ Schließen</button>
-</div>
-
 <!-- Ghost immunity badge -->
-<div id="immunity-badge" data-i18n-template="immunityBadge">🛡️ Geister-Schutz: <span id="immunity-timer">60</span>s</div>
+<div id="immunity-badge">🛡️ Geister-Schutz: <span id="immunity-timer">60</span>s</div>
 
 <!-- Mystery quiz overlay -->
 <div id="mystery-overlay">
-  <h2 data-i18n="mysteryTitle">🔮 Mystery-Rätsel!</h2>
+  <h2>🔮 Mystery-Rätsel!</h2>
   <p id="mystery-question"></p>
-  <input type="text" id="mystery-input" data-i18n-placeholder="mysteryPlaceholder" placeholder="Deine Antwort..." autocomplete="off" />
+  <input type="text" id="mystery-input" placeholder="Deine Antwort..." autocomplete="off" />
   <div id="mystery-result"></div>
   <div class="quiz-buttons">
-    <button class="btn-answer" id="btn-mystery-answer" data-i18n="mysteryAnswer">✅ Antworten</button>
-    <button class="btn-skip" id="btn-mystery-skip" data-i18n="mysterySkip">⏭️ Überspringen</button>
+    <button class="btn-answer" id="btn-mystery-answer">✅ Antworten</button>
+    <button class="btn-skip" id="btn-mystery-skip">⏭️ Überspringen</button>
   </div>
 </div>
 
 <!-- Auto-center toggle -->
-<button id="center-toggle" style="display:none" data-i18n="centerBtn">📍 Zentrieren</button>
-
-<!-- Webcam ghost overlay -->
-<div id="webcam-overlay">
-  <div class="ghost-photo">
-    <span class="ghost-emoji">👻</span>
-  </div>
-  <div class="ghost-label" data-i18n="webcamLabel">📸 Webcam-Cache gefunden!<br>Der Geist sagt: Cheeeese! 😂</div>
-</div>
+<button id="center-toggle" style="display:none">📍 Zentrieren</button>
 
 <!-- Ghost-hit flash -->
 <div id="flash"></div>
@@ -384,136 +270,10 @@
   const $immunityTimer = document.getElementById("immunity-timer");
   const $playerNameInput = document.getElementById("player-name-input");
   const $gameTimer = document.getElementById("game-timer");
-  const $helpBtn = document.getElementById("help-btn");
-  const $helpOverlay = document.getElementById("help-overlay");
-  const $webcamOverlay = document.getElementById("webcam-overlay");
   const $leaderboardScreen = document.getElementById("leaderboard-screen");
   const $leaderboardContent = document.getElementById("leaderboard-content");
   const $winLeaderboard = document.getElementById("win-leaderboard");
   const $leaderboardVisible = document.getElementById("leaderboard-visible");
-
-  // ── i18n translation system ──────────────────────────────────────
-  let currentLang = "de";
-  const i18n = {
-    de: {
-      startDesc: 'Laufe durch den <strong>Alten Südlichen Friedhof</strong> und sammle alle virtuellen Caches ein – aber pass auf die Geister auf!',
-      startSub: 'GPS-basiertes Outdoor-Spiel · 3 Leben · 100 Caches',
-      namePlaceholder: 'Dein Spielername...',
-      nameEmpty: 'Bitte Namen eingeben!',
-      tutorialLink: '📖 Tutorial – So funktioniert\'s',
-      leaderboardLink: '🏆 Bestenliste',
-      rewardText: 'Die Belohnung für PacMan kannst du dir am Ende hier abholen: <a href="https://coord.info/GCBKNAT" target="_blank" rel="noopener noreferrer" style="color: #00cc44;">GCBKNAT</a>',
-      langBtn: '🌐 English',
-      visibilityLabel: 'Ergebnis in der Bestenliste anzeigen',
-      restartBtn: '🔄 Nochmal spielen',
-      gameOverTitle: '💀 Game Over',
-      gameOverDesc: 'Die Geister haben dich erwischt!',
-      leaderboardTitle: '🏆 Bestenliste',
-      backBtn: '← Zurück',
-      closeBtn: '✕ Schließen',
-      centerBtn: '📍 Zentrieren',
-      mysteryTitle: '🔮 Mystery-Rätsel!',
-      mysteryPlaceholder: 'Deine Antwort...',
-      mysteryAnswer: '✅ Antworten',
-      mysterySkip: '⏭️ Überspringen',
-      mysteryCorrect: '✅ Richtig! Geister-Schutz für 60 Sekunden!',
-      mysteryWrong: '❌ Falsch! Versuch es nochmal...',
-      webcamLabel: '📸 Webcam-Cache gefunden!<br>Der Geist sagt: Cheeeese! 😂',
-      immunityBadge: '🛡️ Geister-Schutz: <span id="immunity-timer">{0}</span>s',
-      winStats: 'Punkte: {score} · Zeit: {time} · Leben: {lives}/3',
-      winSubmitting: 'Ergebnis wird übermittelt…',
-      winSuccess: 'Glückwunsch! Dein Ergebnis wurde gespeichert.',
-      goScore: 'Dein Punktestand: {score}',
-      goTime: 'Zeit: {time}',
-      noEntries: 'Noch keine Einträge',
-      thPlayer: 'Spieler',
-      thScore: 'Punkte',
-      thTime: 'Zeit',
-      gpsNA: 'GPS nicht verfügbar. Bitte aktiviere die Standortfreigabe.',
-      gpsError: 'GPS-Fehler: {0}\nBitte aktiviere die Standortfreigabe.',
-      helpContent: '<h2>🎯 Spielidee</h2><p>Sammle alle 100 Caches im Alten Südlichen Friedhof – aber pass auf die Geister auf!</p><h2>🚶 Steuerung</h2><ul><li>Dein GPS bewegt den PacMan automatisch</li><li>Laufe nahe an Caches heran (~10m) zum Einsammeln</li><li>Halte 5m Abstand zu Geistern!</li></ul><h2>📦 Cache-Typen</h2><ul><li>🟢 Traditional: 5 Pkt</li><li>🔵 Multi: 10 Pkt</li><li>📬 Letterbox: 15 Pkt</li><li>🔮 Mystery: 20 Pkt + 60s Schutz</li><li>🟡 Virtual: 25 Pkt + ❤️ Leben</li><li>🟤 Earth: 25 Pkt</li><li>📷 Webcam: 25 Pkt</li><li>🎪 Event: 30 Pkt</li></ul><h2>👻 Geister</h2><ul><li>🔴 Blinky – verfolgt dich direkt</li><li>🩷 Pinky – schneidet dir den Weg ab</li><li>🩵 Inky – unberechenbar</li><li>🟠 Stinky – wird schneller in deiner Nähe</li></ul><p>Treffer: −50 Punkte + Leben verloren · 30s Schutz 🛡️</p>'
-    },
-    en: {
-      startDesc: 'Walk through the <strong>Old Southern Cemetery</strong> in Munich and collect all virtual caches – but watch out for the ghosts!',
-      startSub: 'GPS-based outdoor game · 3 lives · 100 caches',
-      namePlaceholder: 'Your player name...',
-      nameEmpty: 'Please enter a name!',
-      tutorialLink: '📖 Tutorial – How to play',
-      leaderboardLink: '🏆 Leaderboard',
-      rewardText: 'Claim your PacMan reward at the end here: <a href="https://coord.info/GCBKNAT" target="_blank" rel="noopener noreferrer" style="color: #00cc44;">GCBKNAT</a>',
-      langBtn: '🌐 Deutsch',
-      visibilityLabel: 'Show result on leaderboard',
-      restartBtn: '🔄 Play again',
-      gameOverTitle: '💀 Game Over',
-      gameOverDesc: 'The ghosts got you!',
-      leaderboardTitle: '🏆 Leaderboard',
-      backBtn: '← Back',
-      closeBtn: '✕ Close',
-      centerBtn: '📍 Center',
-      mysteryTitle: '🔮 Mystery Puzzle!',
-      mysteryPlaceholder: 'Your answer...',
-      mysteryAnswer: '✅ Submit',
-      mysterySkip: '⏭️ Skip',
-      mysteryCorrect: '✅ Correct! Ghost protection for 60 seconds!',
-      mysteryWrong: '❌ Wrong! Try again...',
-      webcamLabel: '📸 Webcam cache found!<br>The ghost says: Cheeeese! 😂',
-      immunityBadge: '🛡️ Ghost Shield: <span id="immunity-timer">{0}</span>s',
-      winStats: 'Score: {score} · Time: {time} · Lives: {lives}/3',
-      winSubmitting: 'Submitting result…',
-      winSuccess: 'Congratulations! Your result has been saved.',
-      goScore: 'Your score: {score}',
-      goTime: 'Time: {time}',
-      noEntries: 'No entries yet',
-      thPlayer: 'Player',
-      thScore: 'Score',
-      thTime: 'Time',
-      gpsNA: 'GPS not available. Please enable location services.',
-      gpsError: 'GPS error: {0}\nPlease enable location services.',
-      helpContent: '<h2>🎯 How to Play</h2><p>Collect all 100 caches in the Old Southern Cemetery – but watch out for the ghosts!</p><h2>🚶 Controls</h2><ul><li>Your GPS moves PacMan automatically</li><li>Walk close to caches (~10m) to collect them</li><li>Keep 5m distance from ghosts!</li></ul><h2>📦 Cache Types</h2><ul><li>🟢 Traditional: 5 pts</li><li>🔵 Multi: 10 pts</li><li>📬 Letterbox: 15 pts</li><li>🔮 Mystery: 20 pts + 60s shield</li><li>🟡 Virtual: 25 pts + ❤️ life</li><li>🟤 Earth: 25 pts</li><li>📷 Webcam: 25 pts</li><li>🎪 Event: 30 pts</li></ul><h2>👻 Ghosts</h2><ul><li>🔴 Blinky – chases you directly</li><li>🩷 Pinky – tries to cut you off</li><li>🩵 Inky – unpredictable</li><li>🟠 Stinky – speeds up near you</li></ul><p>Hit: −50 points + life lost · 30s shield 🛡️</p>'
-    }
-  };
-
-  function t(key, params) {
-    let str = (i18n[currentLang] && i18n[currentLang][key]) || (i18n.de[key]) || key;
-    if (params) {
-      Object.keys(params).forEach(k => { str = str.replace('{' + k + '}', params[k]); });
-    }
-    return str;
-  }
-
-  function applyLanguage() {
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
-      if (i18n[currentLang][key] !== undefined) el.textContent = i18n[currentLang][key];
-    });
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
-      const val = i18n[currentLang][key];
-      if (val && (val.includes('<') || val.includes('&'))) el.innerHTML = val;
-    });
-    document.querySelectorAll("[data-i18n-html]").forEach(el => {
-      const key = el.getAttribute("data-i18n-html");
-      if (i18n[currentLang][key] !== undefined) el.innerHTML = i18n[currentLang][key];
-    });
-    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-      const key = el.getAttribute("data-i18n-placeholder");
-      if (i18n[currentLang][key] !== undefined) el.placeholder = i18n[currentLang][key];
-    });
-    const $langBtn = document.getElementById("btn-lang");
-    if ($langBtn) $langBtn.textContent = t("langBtn");
-  }
-
-  document.getElementById("btn-lang").addEventListener("click", () => {
-    currentLang = currentLang === "de" ? "en" : "de";
-    localStorage.setItem("pacman_lang", currentLang);
-    applyLanguage();
-  });
-
-  const savedLang = localStorage.getItem("pacman_lang");
-  if (savedLang && i18n[savedLang]) {
-    currentLang = savedLang;
-    applyLanguage();
-  }
 
   // ── State ─────────────────────────────────────────────────────────
   let map, playerMarker, accuracyCircle;
@@ -538,10 +298,10 @@
   let gameTimerInterval = null;
   let lastEntryId = null;
 
-  const LEADERBOARD_API = "https://qwerx.de/pacman/api/leaderboard.php";
+  const LEADERBOARD_API = "https://qwerx.de/pacman/leaderboard.php";
 
-  // Test mode – always active in test.html
-  const isTestMode = true;
+  // Test mode via URL parameter ?test=1
+  const isTestMode = new URLSearchParams(window.location.search).has("test");
 
   // ── Timer functions ────────────────────────────────────────────────
   function startTimer() {
@@ -599,10 +359,10 @@
           });
           const data = await res.json();
           lastEntryId = data.id;
-          return { entries: data.leaderboard || [], winMessage: data.win_message || null };
+          return data.leaderboard || [];
       } catch (e) {
           console.warn("Score submit failed:", e);
-          return { entries: [], winMessage: null };
+          return [];
       }
   }
 
@@ -618,66 +378,19 @@
       }
   }
 
-  const LB_PAGE_SIZE = 10;
-  let lbAllEntries = [];
-  let lbPage = 0;
-  let lbHighlightId = null;
-  let lbContainer = null;
-
   function renderLeaderboard(entries, container, highlightId) {
-      lbAllEntries = entries || [];
-      lbHighlightId = highlightId;
-      lbContainer = container;
-      lbPage = 0;
-
-      // If highlightId is set, jump to the page containing it
-      if (highlightId && lbAllEntries.length > 0) {
-        const idx = lbAllEntries.findIndex(e => parseInt(e.id) === parseInt(highlightId));
-        if (idx >= 0) lbPage = Math.floor(idx / LB_PAGE_SIZE);
-      }
-
-      renderLeaderboardPage();
-  }
-
-  function renderLeaderboardPage() {
-      const entries = lbAllEntries;
-      const container = lbContainer;
-      const highlightId = lbHighlightId;
-      const $pager = document.getElementById("leaderboard-pager");
-
       if (!entries || entries.length === 0) {
-          container.innerHTML = `<p style="color:#666; font-size:.9rem;">${t('noEntries')}</p>`;
-          if ($pager) $pager.style.display = "none";
+          container.innerHTML = '<p style="color:#666; font-size:.9rem;">Noch keine Einträge</p>';
           return;
       }
-
-      const totalPages = Math.ceil(entries.length / LB_PAGE_SIZE);
-      const start = lbPage * LB_PAGE_SIZE;
-      const pageEntries = entries.slice(start, start + LB_PAGE_SIZE);
-
-      let html = `<table class="leaderboard-table"><thead><tr><th>#</th><th>${t('thPlayer')}</th><th>${t('thScore')}</th><th>${t('thTime')}</th></tr></thead><tbody>`;
-      pageEntries.forEach((e, i) => {
-          const rank = start + i + 1;
+      let html = '<table class="leaderboard-table"><thead><tr><th>#</th><th>Spieler</th><th>Punkte</th><th>Zeit</th></tr></thead><tbody>';
+      entries.forEach((e, i) => {
           const isMe = highlightId && parseInt(e.id) === parseInt(highlightId);
           const cls = isMe ? ' class="highlight"' : '';
-          html += `<tr${cls}><td>${rank}</td><td>${escapeHtml(e.player_name)}</td><td>${e.score}</td><td>${formatTime(parseInt(e.time_seconds))}</td></tr>`;
+          html += `<tr${cls}><td>${i + 1}</td><td>${escapeHtml(e.player_name)}</td><td>${e.score}</td><td>${formatTime(parseInt(e.time_seconds))}</td></tr>`;
       });
       html += '</tbody></table>';
       container.innerHTML = html;
-
-      // Pager controls (only for standalone leaderboard screen)
-      if ($pager && container === $leaderboardContent) {
-        if (totalPages > 1) {
-          $pager.style.display = "flex";
-          document.getElementById("lb-page-info").textContent = `${lbPage + 1} / ${totalPages}`;
-          document.getElementById("btn-lb-prev").disabled = lbPage <= 0;
-          document.getElementById("btn-lb-next").disabled = lbPage >= totalPages - 1;
-          document.getElementById("btn-lb-prev").style.opacity = lbPage <= 0 ? "0.4" : "1";
-          document.getElementById("btn-lb-next").style.opacity = lbPage >= totalPages - 1 ? "0.4" : "1";
-        } else {
-          $pager.style.display = "none";
-        }
-      }
   }
 
   function escapeHtml(str) {
@@ -692,10 +405,7 @@
     mystery:     "Images/type_mystery.svg",
     multi:       "Images/type_multi.svg",
     virtual:     "Images/type_virtual.svg",
-    earth:       "Images/type_earth.svg",
-    event:       "Images/type_event.svg",
-    letterbox:   "Images/type_letterbox.svg",
-    webcam:      "Images/type_webcam.svg"
+    earth:       "Images/type_earth.svg"
   };
 
   // ── Audio context (lazy init after user gesture) ──────────────────
@@ -734,10 +444,6 @@
   }
   function soundGameOver() {
     [440, 370, 311, 261].forEach((f, i) => setTimeout(() => playTone(f, 0.22, "sawtooth", 0.12), i * 180));
-  }
-  function soundGhostLaugh() {
-    const freqs = [800, 700, 600, 500, 700, 600, 500, 400, 600, 500, 400, 300];
-    freqs.forEach((f, i) => setTimeout(() => playTone(f, 0.12, "sawtooth", 0.18), i * 100));
   }
 
   // ── Haversine distance (meters) ──────────────────────────────────
@@ -1082,11 +788,6 @@
       showMysteryQuiz(dot.data);
       return;
     }
-    // Webcam waypoints show ghost photo effect
-    if (dot.data.type === "webcam") {
-      showWebcamEffect(dot);
-      return;
-    }
     finalizeCollect(dot);
   }
 
@@ -1135,7 +836,7 @@
     const correct = String(pendingMysteryDot.data.answer).trim().toLowerCase();
 
     if (userAnswer === correct) {
-      $mysteryResult.textContent = t('mysteryCorrect');
+      $mysteryResult.textContent = "✅ Richtig! Geister-Schutz für 60 Sekunden!";
       $mysteryResult.style.color = "#0f0";
       activateImmunity(60);
       setTimeout(() => {
@@ -1145,7 +846,7 @@
         pendingMysteryDot = null;
       }, 1200);
     } else {
-      $mysteryResult.textContent = t('mysteryWrong');
+      $mysteryResult.textContent = "❌ Falsch! Versuch es nochmal...";
       $mysteryResult.style.color = "#f44";
       $mysteryInput.value = "";
       $mysteryInput.focus();
@@ -1162,28 +863,13 @@
     }
   }
 
-  // ── Webcam ghost photo effect ────────────────────────────────────
-  function showWebcamEffect(dot) {
-    dot.collected = true;
-    gameRunning = false;
-    soundGhostLaugh();
-    $webcamOverlay.classList.add("visible");
-    setTimeout(() => {
-      $webcamOverlay.classList.remove("visible");
-      gameRunning = true;
-      finalizeCollect(dot);
-    }, 3000);
-  }
-
   function activateImmunity(seconds) {
     immuneUntil = Date.now() + seconds * 1000;
-    $immunityBadge.innerHTML = t('immunityBadge', { '0': seconds });
     $immunityBadge.style.display = "block";
     if (immunityTimerInterval) clearInterval(immunityTimerInterval);
     immunityTimerInterval = setInterval(() => {
       const remaining = Math.max(0, Math.ceil((immuneUntil - Date.now()) / 1000));
-      const timer = document.getElementById("immunity-timer");
-      if (timer) timer.textContent = remaining;
+      $immunityTimer.textContent = remaining;
       if (remaining <= 0) {
         clearInterval(immunityTimerInterval);
         immunityTimerInterval = null;
@@ -1199,7 +885,6 @@
 
   function ghostHit() {
     lives--;
-    score = Math.max(0, score - 50);
     activateImmunity(GAME_CONFIG.immunityDuration || 5);
     soundGhostHit();
     flashRed();
@@ -1215,18 +900,13 @@
     soundWin();
     const timeSeconds = getElapsedSeconds();
     $winTitle.textContent = GAME_CONFIG.winTitle;
-    $winMessage.textContent = t('winSubmitting');
-    $winStats.textContent = t('winStats', { score, time: formatTime(timeSeconds), lives });
+    $winMessage.textContent = GAME_CONFIG.winMessage;
+    $winStats.textContent = `Punkte: ${score} · Zeit: ${formatTime(timeSeconds)} · Leben: ${lives}/3`;
     $winScreen.style.display = "flex";
 
     // Submit score (visible by default)
     $leaderboardVisible.checked = true;
-    const { entries, winMessage } = await submitScore(true);
-    if (winMessage) {
-      $winMessage.textContent = winMessage;
-    } else {
-      $winMessage.textContent = t('winSuccess');
-    }
+    const entries = await submitScore(true);
     renderLeaderboard(entries, $winLeaderboard, lastEntryId);
 
     // Toggle visibility listener
@@ -1242,8 +922,8 @@
     stopTimer();
     soundGameOver();
     const timeSeconds = getElapsedSeconds();
-    $goScore.textContent = t('goScore', { score });
-    $goTime.textContent = t('goTime', { time: formatTime(timeSeconds) });
+    $goScore.textContent = `Dein Punktestand: ${score}`;
+    $goTime.textContent = `Zeit: ${formatTime(timeSeconds)}`;
     $goScreen.style.display = "flex";
   }
 
@@ -1282,7 +962,7 @@
     }
 
     if (!navigator.geolocation) {
-      alert(t('gpsNA'));
+      alert("GPS nicht verfügbar. Füge ?test an die URL an für den Test-Modus.");
       return;
     }
 
@@ -1292,7 +972,7 @@
       },
       (err) => {
         console.warn("GPS error:", err.message);
-        alert(t('gpsError', { '0': err.message }));
+        alert("GPS-Fehler: " + err.message + "\nFüge ?test an die URL an für den Test-Modus.");
       },
       { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
     );
@@ -1351,23 +1031,16 @@
     if (!name) {
         $playerNameInput.style.borderColor = "#f44";
         $playerNameInput.focus();
-        $playerNameInput.placeholder = t('nameEmpty');
+        $playerNameInput.placeholder = "Bitte Namen eingeben!";
         return;
     }
     playerName = name;
     sessionStorage.setItem("pacman_player_name", name);
 
-    fetch(`${LEADERBOARD_API}?action=notify`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ player_name: name })
-    }).catch(() => {});
-
     ensureAudio();
     $startScreen.style.display = "none";
     $header.style.display = "flex";
     $centerBtn.style.display = "block";
-    $helpBtn.style.display = "block";
     gameRunning = true;
 
     initMap();
@@ -1401,23 +1074,6 @@
 
   document.getElementById("btn-close-leaderboard").addEventListener("click", () => {
       $leaderboardScreen.style.display = "none";
-  });
-
-  // Leaderboard pagination
-  document.getElementById("btn-lb-prev").addEventListener("click", () => {
-    if (lbPage > 0) { lbPage--; renderLeaderboardPage(); }
-  });
-  document.getElementById("btn-lb-next").addEventListener("click", () => {
-    const totalPages = Math.ceil(lbAllEntries.length / LB_PAGE_SIZE);
-    if (lbPage < totalPages - 1) { lbPage++; renderLeaderboardPage(); }
-  });
-
-  // Help button
-  $helpBtn.addEventListener("click", () => {
-    $helpOverlay.classList.add("visible");
-  });
-  document.getElementById("btn-close-help").addEventListener("click", () => {
-    $helpOverlay.classList.remove("visible");
   });
 
   // Restore player name from session
