@@ -1,6 +1,6 @@
 <?php
 /**
- * PacMan Schloßpark Sohland – Leaderboard API v1.3
+ * PacMan München – Leaderboard API v1.3
  * 
  * Endpoints:
  *   GET  ?action=top     → Top 20 sichtbare Einträge
@@ -31,7 +31,7 @@ if (($_GET['action'] ?? '') === 'notify') {
     // Strip newlines to prevent email header injection via the subject
     $safeName = str_replace(["\r", "\n"], '', $name);
     $to      = 'drumpldeer@gmail.com';
-    $subject = 'PacMan Sohland von ' . $safeName;
+    $subject = 'PacMan von ' . $safeName;
     $message = $safeName . ' hat ein PacMan-Spiel gestartet.';
     $headers = 'From: pacman@qwerx.de';
     if (mail($to, $subject, $message, $headers)) {
@@ -50,22 +50,17 @@ $DB_USER = '%%MYSQL_DB%%'; // Injected by GitHub Actions (same as DB_NAME)
 $DB_PASS = '%%MYSQL_PW%%'; // Injected by GitHub Actions
 
 // Win message – only delivered server-side after game completion
-$WIN_MESSAGE_DE = "Du hast alle Caches im Schloßpark gesammelt! Herzlichen Glückwunsch!\n\n"
-    . "Du hast den Geistern aus dem alten Schloß erfolgreich getrotzt.\n\n"
-    . "Der Cache befindet etwas abseits der Geisterzone bei den Koordinaten N51° 02.786 E014° 26.025\n\n"
+$WIN_MESSAGE_DE = "Du hast alle Caches gesammelt! Hier ist der Hinweis zum Bonus-Cache für den absolvierten Power-Trail:\n\n"
+    . "Der Cache befindet etwas abseits der Geisterzone hinter einem passsenden gelben Objekt.\n"
+    . "Koordinaten: N 48° 07.685 E 11° 33.687\n\n"
     . "Viel Erfolg beim Suchen und Entspannen nach der Geisterjagd!";
 
-$WIN_MESSAGE_EN = "You collected all the caches in the castle park! Congratulations!\n\n"
-    . "You successfully braved the ghosts from the old castle.\n\n"
-    . "The cache is located a bit off the ghost zone at coordinates N51° 02.786 E014° 26.025\n\n"
+$WIN_MESSAGE_EN = "You collected all the caches! Here is the clue for the bonus cache for completing the power trail:\n\n"
+    . "The cache is located slightly outside the ghost zone behind a fitting yellow object.\n"
+    . "Coordinates: N 48° 07.685 E 11° 33.687\n\n"
     . "Good luck searching and relaxing after the ghost hunt!";
 
-$WIN_MESSAGE_CZ = "Nasbírali jste všechny kešky v zámeckém parku! Gratulujeme!\n\n"
-    . "Úspěšně jste vzdorovali duchům ze starého zámku.\n\n"
-    . "Keška se nachází kousek od Zóny duchů na souřadnicích N51° 02.786 E014° 26.025\n\n"
-    . "Hodně štěstí při hledání a odpočinek po lovu duchů!";
-
-$TOTAL_DOTS = 100;
+$TOTAL_DOTS = 99;
 
 try {
     $pdo = new PDO(
@@ -87,7 +82,7 @@ switch ($action) {
         // GET – Top 20 sichtbare Ergebnisse, sortiert nach Score desc, Zeit asc
         $stmt = $pdo->query(
             'SELECT id, player_name, score, time_seconds, dots_collected, lives_remaining, created_at
-             FROM `pacman-sohland`
+             FROM pacman_leaderboard
              WHERE visible = 1
              ORDER BY score DESC, time_seconds ASC
              LIMIT 100'
@@ -110,10 +105,10 @@ switch ($action) {
         $dots = intval($data['dots_collected'] ?? 0);
         $lives = intval($data['lives_remaining'] ?? 0);
         $visible = intval($data['visible'] ?? 1);
-        $lang = $data['lang'] ?? 'de';
+        $lang = ($data['lang'] ?? 'de') === 'en' ? 'en' : 'de';
 
         $stmt = $pdo->prepare(
-            'INSERT INTO `pacman-sohland` (player_name, score, time_seconds, dots_collected, lives_remaining, visible)
+            'INSERT INTO pacman_leaderboard (player_name, score, time_seconds, dots_collected, lives_remaining, visible)
              VALUES (:name, :score, :time, :dots, :lives, :visible)'
         );
         $stmt->execute([
@@ -130,13 +125,13 @@ switch ($action) {
         // Return current leaderboard with the new entry
         $lb = $pdo->query(
             'SELECT id, player_name, score, time_seconds, dots_collected, lives_remaining, created_at
-             FROM `pacman-sohland`
+             FROM pacman_leaderboard
              WHERE visible = 1
              ORDER BY score DESC, time_seconds ASC
              LIMIT 20'
         );
 
-        $winMsg = ($dots >= $TOTAL_DOTS) ? ($lang === 'cz' ? $WIN_MESSAGE_CZ : ($lang === 'en' ? $WIN_MESSAGE_EN : $WIN_MESSAGE_DE)) : null;
+        $winMsg = ($dots >= $TOTAL_DOTS) ? ($lang === 'en' ? $WIN_MESSAGE_EN : $WIN_MESSAGE_DE) : null;
 
         echo json_encode([
             'success' => true,
@@ -158,7 +153,7 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $pdo->prepare('UPDATE `pacman-sohland` SET visible = :visible WHERE id = :id');
+        $stmt = $pdo->prepare('UPDATE pacman_leaderboard SET visible = :visible WHERE id = :id');
         $stmt->execute([':visible' => $visible, ':id' => $id]);
 
         echo json_encode(['success' => true]);
@@ -168,4 +163,4 @@ switch ($action) {
         http_response_code(400);
         echo json_encode(['error' => 'Unknown action. Use: top, submit, toggle']);
 }
-// Deploy trigger: 1780588227546
+// Deploy trigger: 2026-03-13 22:06
