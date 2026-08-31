@@ -11,7 +11,7 @@
   </style>
 </head>
 <body>
-  <h1>Gewinnnachricht testen</h1>
+  <h1>Gewinn-Nachricht testen</h1>
   <p>Der Testeintrag wird unsichtbar in der Datenbank gespeichert.</p>
   <button id="send" type="button">Testanfrage senden</button>
   <pre id="result">Noch keine Anfrage gesendet.</pre>
