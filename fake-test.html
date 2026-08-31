@@ -265,6 +265,7 @@
       <span data-i18n="visibilityLabel">Ergebnis in der Bestenliste anzeigen</span>
     </label>
   </div>
+  <button id="btn-retry-submit" type="button" style="display:none; margin-bottom:12px;" data-i18n="retrySubmit">🔄 Übertragung wiederholen</button>
   <button id="btn-restart-win" data-i18n="restartBtn">🔄 Nochmal spielen</button>
 </div>
 
@@ -449,6 +450,8 @@
       winSubmitting: 'Ergebnis wird übermittelt…',
       winSuccess: 'Glückwunsch! Dein Ergebnis wurde gespeichert.',
       winSuccessAnon: 'Glückwunsch! Du hast anonym gespielt – dein Ergebnis ist nicht in der Bestenliste sichtbar.',
+      winSubmitFailed: 'Ergebnis konnte nicht gespeichert werden. Bitte klicke auf „Übertragung wiederholen“ und stelle sicher, dass du online bist.',
+      retrySubmit: '🔄 Übertragung wiederholen',
       goScore: 'Dein Punktestand: {score}',
       goTime: 'Zeit: {time}',
       noEntries: 'Noch keine Einträge',
@@ -493,6 +496,8 @@
       winSubmitting: 'Submitting result…',
       winSuccess: 'Congratulations! Your result has been saved.',
       winSuccessAnon: 'Congratulations! You played anonymously – your result is not visible on the leaderboard.',
+      winSubmitFailed: 'The result could not be saved. Please click “Retry submission” and make sure you are online.',
+      retrySubmit: '🔄 Retry submission',
       goScore: 'Your score: {score}',
       goTime: 'Time: {time}',
       noEntries: 'No entries yet',
@@ -582,6 +587,7 @@
   let gameStartTime = 0;
   let gameTimerInterval = null;
   let lastEntryId = null;
+  let finalScorePayload = null;
 
   const LEADERBOARD_API = "https://qwerx.de/pacman/api/leaderboard.php"; // v2
 
@@ -624,28 +630,22 @@
       }
   }
 
-  async function submitScore(visible) {
-      const timeSeconds = getElapsedSeconds();
+    async function submitScore(payload) {
       try {
           const res = await fetch(`${LEADERBOARD_API}?action=submit`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                  player_name: playerName,
-                  score: score,
-                  time_seconds: timeSeconds,
-                  dots_collected: collectedCount,
-                  lives_remaining: lives,
-                  visible: visible ? 1 : 0,
-                  lang: currentLang
-              })
+          body: JSON.stringify(payload)
           });
           const data = await res.json();
+        if (!res.ok || data.success !== true || !data.id) {
+          throw new Error(data.error || `HTTP ${res.status}`);
+        }
           lastEntryId = data.id;
-          return { entries: data.leaderboard || [], winMessage: data.win_message || null };
+        return { success: true, entries: data.leaderboard || [], winMessage: data.win_message || null };
       } catch (e) {
           console.warn("Score submit failed:", e);
-          return { entries: [], winMessage: null };
+        return { success: false, entries: [], winMessage: null };
       }
   }
 
@@ -1399,6 +1399,40 @@
   }
 
   // ── End states ────────────────────────────────────────────────────
+  function showSubmittedScore(entries, winMessage) {
+    document.getElementById("btn-retry-submit").style.display = "none";
+    document.getElementById("visibility-toggle").style.display = isAnonymous ? "none" : "block";
+    if (winMessage) {
+      const anonNote = isAnonymous ? t('winSuccessAnon') + "\n\n" : "";
+      $winMessage.textContent = anonNote + winMessage;
+    } else {
+      $winMessage.textContent = isAnonymous ? t('winSuccessAnon') : t('winSuccess');
+    }
+    renderLeaderboard(entries, $winLeaderboard, lastEntryId);
+  }
+
+  function showScoreSubmitError() {
+    $winMessage.textContent = t('winSubmitFailed');
+    $winLeaderboard.innerHTML = "";
+    document.getElementById("visibility-toggle").style.display = "none";
+    document.getElementById("btn-retry-submit").style.display = "block";
+  }
+
+  async function retryScoreSubmit() {
+    if (!finalScorePayload) return;
+    const $retryButton = document.getElementById("btn-retry-submit");
+    $retryButton.disabled = true;
+    $winMessage.textContent = t('winSubmitting');
+
+    const result = await submitScore(finalScorePayload);
+    $retryButton.disabled = false;
+    if (result.success) {
+      showSubmittedScore(result.entries, result.winMessage);
+    } else {
+      showScoreSubmitError();
+    }
+  }
+
   async function win() {
     gameRunning = false;
     stopTimer();
@@ -1412,15 +1446,21 @@
     // Submit score (visible by default, hidden for anonymous)
     $leaderboardVisible.checked = !isAnonymous;
     document.getElementById("visibility-toggle").style.display = isAnonymous ? "none" : "block";
-    const { entries, winMessage } = await submitScore(!isAnonymous);
-    if (winMessage) {
-      // Always show server win message (contains bonus cache coordinates)
-      const anonNote = isAnonymous ? t('winSuccessAnon') + "\n\n" : "";
-      $winMessage.textContent = anonNote + winMessage;
+    finalScorePayload = {
+      player_name: playerName,
+      score: score,
+      time_seconds: timeSeconds,
+      dots_collected: collectedCount,
+      lives_remaining: lives,
+      visible: isAnonymous ? 0 : 1,
+      lang: currentLang
+    };
+    const result = await submitScore(finalScorePayload);
+    if (result.success) {
+      showSubmittedScore(result.entries, result.winMessage);
     } else {
-      $winMessage.textContent = isAnonymous ? t('winSuccessAnon') : t('winSuccess');
+      showScoreSubmitError();
     }
-    renderLeaderboard(entries, $winLeaderboard, lastEntryId);
 
     // Toggle visibility listener
     $leaderboardVisible.onchange = async () => {
@@ -1454,6 +1494,8 @@
     setBoundaryOverlay(false);
     gameStartTime = 0;
     lastEntryId = null;
+    finalScorePayload = null;
+    document.getElementById("btn-retry-submit").style.display = "none";
     pendingMysteryDot = null;
     if (immunityTimerInterval) { clearInterval(immunityTimerInterval); immunityTimerInterval = null; }
     $immunityBadge.style.display = "none";
@@ -1597,6 +1639,7 @@
     }
   });
   document.getElementById("btn-restart-win").addEventListener("click", resetGame);
+  document.getElementById("btn-retry-submit").addEventListener("click", retryScoreSubmit);
   document.getElementById("btn-restart-go").addEventListener("click", resetGame);
   $centerBtn.addEventListener("click", () => {
     autoCenter = !autoCenter;
