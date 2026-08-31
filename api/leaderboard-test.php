@@ -25,7 +25,7 @@
       result.textContent = 'Anfrage läuft …';
 
       try {
-        const response = await fetch('https://qwerx.de/api/leaderboard.php?action=submit', {
+        const response = await fetch('https://qwerx.de/pacman/api/leaderboard.php?action=submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
